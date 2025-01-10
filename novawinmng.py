@@ -5,35 +5,35 @@ import traceback
 import pandas as pd
 import configparser
 import openpyxl
-def agregar_dataframe_a_nueva_hoja(ruta_excel, nombre_hoja, dataframe):
+def agregar_dataframe_a_nueva_hoja(archivo_planilla, nombre_hoja, dataframe):
     """
     Agrega un DataFrame a una nueva hoja en un archivo Excel.
     Si el archivo Excel no existe, se crea.
     Si el nombre de la hoja ya existe, lanza un error.
     
-    :param ruta_excel: Ruta del archivo Excel.
+    :param archivo_planilla: Ruta del archivo Excel.
     :param nombre_hoja: Nombre de la nueva hoja.
     :param dataframe: DataFrame que se agregará.
     """
     try:
         # Normalizar ruta según el sistema operativo
-        ruta_excel = os.path.normpath(ruta_excel)
-        ruta_excel = os.path.join(ruta_excel, "Report.xlsx")
+        #archivo_planilla = os.path.normpath(archivo_planilla)
+        #archivo_planilla = os.path.join(archivo_planilla, "Report.xlsx")
         # Verificar si el archivo Excel existe
-        if not os.path.exists(ruta_excel):
+        if not os.path.exists(archivo_planilla):
             # Crear un nuevo archivo Excel con la hoja especificada
-            with pd.ExcelWriter(ruta_excel, engine='openpyxl') as writer:
+            with pd.ExcelWriter(archivo_planilla, engine='openpyxl') as writer:
                 dataframe.to_excel(writer, sheet_name=nombre_hoja, index=False)
-            print(f"Archivo Excel creado con la hoja '{nombre_hoja}': {ruta_excel}")
+            print(f"Archivo Excel creado con la hoja '{nombre_hoja}': {archivo_planilla}")
         else:
             # Abrir el archivo Excel existente
-            with pd.ExcelWriter(ruta_excel, engine='openpyxl', mode='a') as writer:
+            with pd.ExcelWriter(archivo_planilla, engine='openpyxl', mode='a') as writer:
                 # Verificar si la hoja ya existe
                 if nombre_hoja in writer.book.sheetnames:
                     raise ValueError(f"La hoja '{nombre_hoja}' ya existe en el archivo Excel.")
                 # Agregar el DataFrame a la nueva hoja
                 dataframe.to_excel(writer, sheet_name=nombre_hoja, index=False)
-            print(f"Datos agregados exitosamente a la nueva hoja '{nombre_hoja}' en: {ruta_excel}")
+            print(f"Datos agregados exitosamente a la nueva hoja '{nombre_hoja}' en: {archivo_planilla}")
     except Exception as e:
         print(f"Error al agregar el DataFrame a la nueva hoja: {e}")
         raise

@@ -8,6 +8,7 @@ import time
 import threading
 from novawinmng import manejar_novawin, leer_csv_y_crear_dataframe,agregar_csv_a_plantilla_excel, guardar_dataframe_en_ini,generar_nombre_unico,agregar_dataframe_a_excel_sin_borrar,agregar_dataframe_a_nueva_hoja
 from pywinauto.keyboard import send_keys
+from openpyxl import Workbook
 
 def hilo_exportar_HK(main_window, path_csv, app):
     # Aquí va la lógica para exportar el reporte
@@ -44,7 +45,7 @@ def exportar_reporte_HK(main_window, ruta_exportacion, app):
         Pore_Size_Distribution_menu_item.click_input()
         print("Se seleccionó ' Pore Size Distribution' exitosamente.")
 
-        time.sleep(2)
+        time.sleep(1)
         secondary_window2 = app.window(title_re=f".*tab:Pore Size Distribution: file_to_open_nameonly.*")
         main_window.right_click_input()
         time.sleep(1)
@@ -53,7 +54,7 @@ def exportar_reporte_HK(main_window, ruta_exportacion, app):
         savecsv_menu_item.click_input()
         print("Se seleccionó 'Export to .CSV' exitosamente.")
 
-        time.sleep(2)
+        time.sleep(1)
         csv_dialog = app.window(class_name="#32770")
 
         print("llegó hasta aquí")
@@ -61,7 +62,7 @@ def exportar_reporte_HK(main_window, ruta_exportacion, app):
 
          # Enfocar el cuadro de texto con Alt + M
         send_keys('%m')  # % representa la tecla Alt en pywinauto
-        time.sleep(2)
+        time.sleep(1)
         send_keys(ruta_exportacion)  # % representa la tecla Alt en pywinauto
         # Esperar hasta que el cuadro de texto esté enfocado
         edit_box = csv_dialog.child_window(control_type="Edit", found_index=0)
@@ -130,7 +131,7 @@ def exportar_reporte_DFT(main_window, ruta_exportacion, app):
         single_point_menu_item.click_input()
         print("Se seleccionó ' Pore Size Distribution' exitosamente.")
 
-        time.sleep(2)
+        time.sleep(1)
         secondary_window2 = app.window(title_re=f".*tab: Pore Size Distribution: file_to_open_nameonly.*")
         main_window.right_click_input()
         time.sleep(1)
@@ -139,14 +140,14 @@ def exportar_reporte_DFT(main_window, ruta_exportacion, app):
         savecsv_menu_item.click_input()
         print("Se seleccionó 'Export to .CSV' exitosamente.")
 
-        time.sleep(2)
+        time.sleep(1)
         csv_dialog = app.window(class_name="#32770")
 
         print("llegó hasta aquí")
         ruta_exportacion = generar_nombre_unico(ruta_exportacion,"dft.csv")
         # Enfocar el cuadro de texto con Alt + M
         send_keys('%m')  # % representa la tecla Alt en pywinauto
-        time.sleep(2)
+        time.sleep(1)
         send_keys(ruta_exportacion)  # % representa la tecla Alt en pywinauto
         # Esperar hasta que el cuadro de texto esté enfocado
         edit_box = csv_dialog.child_window(control_type="Edit", found_index=0)
@@ -619,10 +620,33 @@ def hilo_guardar_dataframe_en_ini(df, archivo_ini, resultado_dict):
         resultado_dict['error'] = f"Error al guardar INI: {e}"
         
 def df_main(path_qps, path_csv, path_novawin):
+    
     resultado_dict = {}
     ruta_excel=path_csv
-    print(ruta_excel)
+  
     print("Inicio de df_main")
+    
+    print(ruta_excel)
+    
+    # Construir la ruta del archivo correctamente
+    archivo_planilla = os.path.join(ruta_excel, "Reporte.xlsx")
+
+    # Imprimir la ruta completa
+    print(archivo_planilla)
+    # Si el archivo ya existe, eliminarlo
+    if os.path.exists(archivo_planilla):
+      os.remove(archivo_planilla)
+      print(f"Archivo '{archivo_planilla}' eliminado.")
+
+    # Crear un nuevo archivo Excel
+    wb = Workbook()
+    hoja = wb.active
+    hoja.title = "Leeme"
+    hoja["A1"] = "Datos de analisis hecho en NovaWin"  # Agregar un título en la celda A1
+
+    # Guardar el archivo_planilla
+    wb.save(archivo_planilla)
+    print(f"Archivo '{archivo_planilla}' creado nuevamente.")
     try:
         # Inicializar y manejar NovaWin
         app, main_window = manejar_novawin(path_novawin, path_qps)
@@ -648,7 +672,7 @@ def df_main(path_qps, path_csv, path_novawin):
         hilo_leer_csv_HK = threading.Thread(target=hilo_leer_csv_y_crear_dataframe, args=(ruta_csv_HK, resultado_dict))
         hilo_leer_csv_HK.start()
         hilo_leer_csv_HK.join()
-        agregar_dataframe_a_nueva_hoja(ruta_excel, "HK", dataframe)
+        agregar_dataframe_a_nueva_hoja(archivo_planilla, "HK", dataframe)
         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
@@ -677,7 +701,7 @@ def df_main(path_qps, path_csv, path_novawin):
         hilo_leer_csv_DFT = threading.Thread(target=hilo_leer_csv_y_crear_dataframe, args=(ruta_csv_DFT, resultado_dict))
         hilo_leer_csv_DFT.start()
         hilo_leer_csv_DFT.join()
-        agregar_dataframe_a_nueva_hoja(ruta_excel, "DFT", dataframe)
+        agregar_dataframe_a_nueva_hoja(archivo_planilla, "DFT", dataframe)
         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
@@ -704,7 +728,7 @@ def df_main(path_qps, path_csv, path_novawin):
         hilo_leer_csv_BJHD = threading.Thread(target=hilo_leer_csv_y_crear_dataframe, args=(ruta_csv_BJHD, resultado_dict))
         hilo_leer_csv_BJHD.start()
         hilo_leer_csv_BJHD.join()
-        agregar_dataframe_a_nueva_hoja(ruta_excel, "BJHD", dataframe)
+        agregar_dataframe_a_nueva_hoja(archivo_planilla, "BJHD", dataframe)
         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
@@ -731,7 +755,7 @@ def df_main(path_qps, path_csv, path_novawin):
         hilo_leer_csv_BJHA = threading.Thread(target=hilo_leer_csv_y_crear_dataframe, args=(ruta_csv_BJHA, resultado_dict))
         hilo_leer_csv_BJHA.start()
         hilo_leer_csv_BJHA.join()
-        agregar_dataframe_a_nueva_hoja(ruta_excel, "BJHA", dataframe)
+        agregar_dataframe_a_nueva_hoja(archivo_planilla, "BJHA", dataframe)
        
         #guardar_dataframe_en_ini(dataframe, path_csv+"dataframe.ini")
         
@@ -760,7 +784,7 @@ def df_main(path_qps, path_csv, path_novawin):
         hilo_leer_csv_FFHA = threading.Thread(target=hilo_leer_csv_y_crear_dataframe, args=(ruta_csv_FFHA, resultado_dict))
         hilo_leer_csv_FFHA.start()
         hilo_leer_csv_FFHA.join()
-        agregar_dataframe_a_nueva_hoja(ruta_excel, "FFHA", dataframe)
+        agregar_dataframe_a_nueva_hoja(archivo_planilla, "FFHA", dataframe)
         #guardar_dataframe_en_ini(dataframe, path_csv+"dataframe.ini")
         
         
@@ -789,7 +813,7 @@ def df_main(path_qps, path_csv, path_novawin):
         hilo_leer_csv_NKA = threading.Thread(target=hilo_leer_csv_y_crear_dataframe, args=(ruta_csv_NKA, resultado_dict))
         hilo_leer_csv_NKA.start()
         hilo_leer_csv_NKA.join()
-        agregar_dataframe_a_nueva_hoja(ruta_excel, "NKA", dataframe)
+        agregar_dataframe_a_nueva_hoja(archivo_planilla, "NKA", dataframe)
         
         
         # Inicializar y manejar NovaWin nuevamente
@@ -818,7 +842,7 @@ def df_main(path_qps, path_csv, path_novawin):
         hilo_leer_csv_BET = threading.Thread(target=hilo_leer_csv_y_crear_dataframe, args=(ruta_csv_BET, resultado_dict))
         hilo_leer_csv_BET.start()
         hilo_leer_csv_BET.join()
-        agregar_dataframe_a_nueva_hoja(ruta_excel, "BET", dataframe)
+        agregar_dataframe_a_nueva_hoja(archivo_planilla, "BET", dataframe)
         
         #guardar_dataframe_en_ini(dataframe, path_csv+"dataframe.ini")      
 

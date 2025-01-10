@@ -1,18 +1,22 @@
 from tkinter import Tk, Label, Button, Entry, filedialog
 import configparser
 import threading
-from novarep import main
 from methods_to_df import df_main
-from HK import hk_main
-from DFT import dft_main
-from BJHA import bjha_main
-from BJHD import bjhd_main
-from FFHAGRAPH import ffhagraph_main
-from NKAGRAPH import nkagraph_main
+from graphs import graphs_main
 from datetime import datetime
+
 
 # Archivo de configuración
 config_file = "config.ini"
+# Función genérica para ejecutar módulos con rutas
+def ejecutar_modulo_grafico(funcion):
+    """Ejecutar una función pasando las rutas como argumentos."""
+    ruta_csv = entry_csv.get()
+    print(f"Ejecutando {funcion.__name__} con rutas:")
+    print(f"CSV: {ruta_csv}")
+    ventana.quit()
+    ventana.destroy()
+    funcion(ruta_csv)
 
 # Función genérica para ejecutar módulos con rutas
 def ejecutar_modulo(funcion):
@@ -70,7 +74,7 @@ def guardar_configuracion():
 # Crear ventana principal
 ventana = Tk()
 ventana.title("Selector de Rutas")
-ventana.geometry("1000x1200")
+ventana.geometry("1000x500")
 ventana.resizable(False, False)
 
 # Etiquetas y campos de entrada
@@ -96,14 +100,10 @@ Button(ventana, text="Seleccionar Carpeta", command=lambda: seleccionar_ruta_asy
 
 # Botones para guardar configuración y ejecutar funciones
 Button(ventana, text="Guardar Configuración", command=guardar_configuracion).grid(row=4, column=1, pady=10)
-Button(ventana, text="Ejecutar HK", command=lambda: ejecutar_modulo(hk_main)).grid(row=5, column=1, pady=10)
-Button(ventana, text="Ejecutar DFT", command=lambda: ejecutar_modulo(dft_main)).grid(row=6, column=1, pady=10)
-Button(ventana, text="Ejecutar BJHA", command=lambda: ejecutar_modulo(bjha_main)).grid(row=7, column=1, pady=10)
-Button(ventana, text="Ejecutar BJHD", command=lambda: ejecutar_modulo(bjhd_main)).grid(row=8, column=1, pady=10)
-Button(ventana, text="Ejecutar FFHAGRAPH", command=lambda: ejecutar_modulo(ffhagraph_main)).grid(row=9, column=1, pady=10)
-Button(ventana, text="Ejecutar NKAGRAPH", command=lambda: ejecutar_modulo(nkagraph_main)).grid(row=10, column=1, pady=10)
-Button(ventana, text="Ejecutar BET", command=lambda: ejecutar_modulo(main)).grid(row=11, column=1, pady=10)
-Button(ventana, text="Ejecutar Metodos", command=lambda: ejecutar_modulo(df_main)).grid(row=12, column=1, pady=10)
+
+Button(ventana, text="Ejecutar Metodos", command=lambda: ejecutar_modulo(df_main)).grid(row=6, column=1, pady=10)
+
+Button(ventana, text="Dibujar", command=lambda: ejecutar_modulo_grafico(graphs_main)(grphs_main)).grid(row=8, column=1, pady=10)
 
 # Cargar configuración inicial
 cargar_configuracion()
