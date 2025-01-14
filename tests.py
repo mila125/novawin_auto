@@ -14,7 +14,24 @@ from openpyxl import Workbook
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from openpyxl import load_workbook
+from pandas import ExcelWriter
+from openpyxl import load_workbook
+from pandas import ExcelWriter
 
+
+def agregar_dataframe_a_nueva_hoja(archivo_excel, dataframe, nombre_hoja):
+    # Cargar el archivo Excel existente
+    book = load_workbook(archivo_excel)
+    
+    # Usar el modo 'append' para evitar sobrescribir el archivo
+    with pd.ExcelWriter(archivo_excel, engine='openpyxl', mode='a', if_sheet_exists='new') as writer:
+        # Pasar el objeto book al escritor
+        writer._book = book  # Nota: Usamos '_book' en lugar de 'book'
+        
+        # Escribir el DataFrame en la nueva hoja
+        dataframe.to_excel(writer, sheet_name=nombre_hoja, index=False)
+            
 def BET_BI(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
     # Normalizar la ruta del archivo
     ruta_excel = os.path.normpath(ruta_excel)
@@ -63,25 +80,145 @@ def BET_BI(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
     # Dividir los promedios
     div = promedio_volume_stp_a / promedio_volume_stp_b
     print("La división es: " + str(round(div, 2)))  # Convierte el número a cadena y lo redondea
-
+    if (div >= 1):
+        return True
+    else:
+        return False
     # Filtrar los últimos N elementos según el valor de Rango_de_Desorpcion
    
         
-def BET_P(df):
-    # Filtrar las columnas necesarias
-    columna_Volume_STP = df['Volume @ STP']
-    columna_W_PIPo = df['1 / [ W((P/Po) - 1) ]']
+def BET_P(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
+    # Normalizar la ruta del archivo
+    ruta_excel = os.path.normpath(ruta_excel)
+    ruta_excel = os.path.join(ruta_excel, "Report.xlsx")
+
+    # Verificar si las columnas necesarias existen en el DataFrame
+    if 'Volume @ STP' not in df.columns or '1 / [ W((P/Po) - 1) ]' not in df.columns:
+        print("Las columnas necesarias no están en el DataFrame.")
+        return
+    try:
+        # Convertir Rango_de_Desorpcion a entero y filtrar
+        num_filas = int(Rango_de_Desorpcion)
+        ultimo_rango_df = df.tail(num_filas)
+        print("Últimos elementos filtrados según Rango de Desorción:")
+        print(ultimo_rango_df)
+    except ValueError:
+        print("El valor de Rango_de_Desorpcion no es válido para realizar el filtrado.")
+
+    # Verificar si las columnas necesarias existen en el DataFrame
+    if 'Volume @ STP' not in df.columns or '1 / [ W((P/Po) - 1) ]' not in df.columns:
+        print("Las columnas necesarias no están en el DataFrame.")
+        return
     
+     # Filtrar los rangos y mostrar los datos
+    filtered_df_a = ultimo_rango_df[
+        (ultimo_rango_df['Relative Pressure'] >= 0.6) & (ultimo_rango_df['Relative Pressure'] <= 0.75)
+    ]
+    print("Filtrado en rango 0.6-0.75:")
+    print(filtered_df_a)
 
-def BET_C(df):
-    # Filtrar las columnas necesarias
-    columna_Volume_STP = df['Volume @ STP']
-    columna_W_PIPo = df['1 / [ W((P/Po) - 1) ]']
- #   rango_0_45_0_55 =
-  #  rango_0_6_0_75 =
+    # Calcular el promedio de la columna 'Volume @ STP'
+    if not ultimo_rango_df['Volume @ STP'].isnull().all():  # Verificar si la columna no está vacía
+        promedio_volume_stp_a = filtered_df_a['Volume @ STP'].mean()
+        print(f"Promedio de 'Volume @ STP': {promedio_volume_stp_a}")
+    else:
+        print("La columna 'Volume @ STP' está vacía o contiene solo valores nulos.")
+    
+    try:
+        # Convertir Rango_de_Absorpcion a entero y filtrar
+        num_filas = int(Rango_de_Absorpcion)
+        
+        # Obtener los primeros "num_filas" elementos
+        primeros_rango_df = df.head(num_filas)
+        print("Primeros elementos filtrados según Rango de Rango_de_Absorpcion:")
+        print(primeros_rango_df)
+    except ValueError:
+        print("El valor de Rango_de_Absorpcion no es válido para realizar el filtrado.")
+        return
+   
+    filtered_df_b = ultimo_rango_df[
+        (ultimo_rango_df['Relative Pressure'] >= 0.6) & (ultimo_rango_df['Relative Pressure'] <= 0.75)
+    ]
+    print("Filtrado en rango 0.6-0.75:")
+    print(filtered_df_b)
 
-def tests_main(archivo_ruta_completa,Rango_de_Absorpcion,Rango_de_Desorpcion):
+    # Calcular el promedio de la columna 'Volume @ STP'
+    if not filtered_df_b['Volume @ STP'].isnull().all():  # Verificar si la columna no está vacía
+        promedio_volume_stp_b = filtered_df_b['Volume @ STP'].mean()
+        print(f"Promedio de 'Volume @ STP': {promedio_volume_stp_b}")
+    else:
+        print("La columna 'Volume @ STP' está vacía o contiene solo valores nulos.")
 
+    # Dividir los promedios
+    div = promedio_volume_stp_a / promedio_volume_stp_b
+    print("La división es: " + str(round(div, 2)))  # Convierte el número a cadena y lo redondea
+    if (div >= 1):
+        return True
+    else:
+        return False
+    # Filtrar los últimos N elementos según el valor de Rango_de_Desorpcion
+def BET_C(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
+    # Normalizar la ruta del archivo
+    ruta_excel = os.path.normpath(ruta_excel)
+    ruta_excel = os.path.join(ruta_excel, "Report.xlsx")
+
+    # Verificar si las columnas necesarias existen en el DataFrame
+    if 'Volume @ STP' not in df.columns or '1 / [ W((P/Po) - 1) ]' not in df.columns:
+        print("Las columnas necesarias no están en el DataFrame.")
+        return
+    try:
+        # Convertir Rango_de_Desorpcion a entero y filtrar
+        num_filas = int(Rango_de_Desorpcion)
+        ultimo_rango_df = df.tail(num_filas)
+        print("Últimos elementos filtrados según Rango de Desorción:")
+        print(ultimo_rango_df)
+    except ValueError:
+        print("El valor de Rango_de_Desorpcion no es válido para realizar el filtrado.")
+
+    # Verificar si las columnas necesarias existen en el DataFrame
+    if 'Volume @ STP' not in df.columns or '1 / [ W((P/Po) - 1) ]' not in df.columns:
+        print("Las columnas necesarias no están en el DataFrame.")
+        return
+    
+     # Filtrar los rangos y mostrar los datos
+    filtered_df_a = ultimo_rango_df[
+        (ultimo_rango_df['Relative Pressure'] >= 0.95) & (ultimo_rango_df['Relative Pressure'] <= 1.0)
+    ]
+    print("Filtrado en rango 0.95-1.0:")
+    print(filtered_df_a)
+   
+    try:
+        # Convertir Rango_de_Absorpcion a entero y filtrar
+        num_filas = int(Rango_de_Absorpcion)
+        
+        # Obtener los primeros "num_filas" elementos
+        primeros_rango_df = df.head(num_filas)
+        print("Primeros elementos filtrados según Rango de Rango_de_Absorpcion:")
+        print(primeros_rango_df)
+    except ValueError:
+        print("El valor de Rango_de_Absorpcion no es válido para realizar el filtrado.")
+        return
+   
+    filtered_df_b = ultimo_rango_df[
+        (ultimo_rango_df['Relative Pressure'] >= 0.95) & (ultimo_rango_df['Relative Pressure'] <= 1.0)
+    ]
+    print("Filtrado en rango 0.95-1.0:")
+    print(filtered_df_b)
+
+    # Calcular el promedio de la columna 'Volume @ STP'
+    if not filtered_df_b['Volume @ STP'].isnull().all():  # Verificar si la columna no está vacía
+        promedio_volume_stp_ab = filtered_df_b['Volume @ STP'].mean()
+        promedio_volume_stp_ab = promedio_volume_stp_ab + filtered_df_a['Volume @ STP'].mean()
+        print(f"Promedio de 'Volume @ STP de valores de Absorbcion y Desorbcion es ': {promedio_volume_stp_ab}")
+    else:
+        print("La columna 'Volume @ STP' está vacía o contiene solo valores nulos.")
+
+    if (promedio_volume_stp_ab >= 1):
+        return True
+    else:
+        return False
+    # Filtrar los últimos N elementos según el valor de Rango_de_Desorpcion
+def tests_main(archivo_ruta_completa, Rango_de_Absorpcion, Rango_de_Desorpcion):
     print("Inicio de graphs_main")
     print(archivo_ruta_completa)
         
@@ -89,11 +226,58 @@ def tests_main(archivo_ruta_completa,Rango_de_Absorpcion,Rango_de_Desorpcion):
     print(f"Rango de Absorción: {Rango_de_Absorpcion}")
     print(f"Rango de Desorción: {Rango_de_Desorpcion}")
     # Construir la ruta del archivo correctamente
-    archivo_planilla = os.path.join(archivo_ruta_completa, "Reporte.xlsx")
-       
-    # Leer los datos de la hoja 'BET'
-    df_bet = pd.read_excel(archivo_planilla, sheet_name='BET')
-   
-    BET_BI(df_bet,archivo_planilla,Rango_de_Absorpcion,Rango_de_Desorpcion)
-    print(df_bet.head())
 
+  
+    archivo_ruta_completa = archivo_ruta_completa.replace("/", "\\")  # Reemplazar barras normales por barras invertidas
+        
+    # O usar normpath para normalizar la ruta según el sistema operativo
+    archivo_ruta_completa = os.path.normpath(archivo_ruta_completa)
+    archivo_planilla = os.path.join(archivo_ruta_completa, "Reporte.xlsx")
+
+
+
+    # Crear un DataFrame para almacenar los resultados
+    resultados = pd.DataFrame(columns=["Test", "Resultado", "Promedio_A", "Promedio_B", "División"])
+    # Leer los datos de la hoja 'BET'
+    df = pd.read_excel(archivo_planilla,sheet_name='BET') 
+    # Ejecución de los tests
+    resultado_bi = BET_BI(df, archivo_planilla, Rango_de_Absorpcion, Rango_de_Desorpcion)
+    if resultado_bi:
+         # Añadir resultados al DataFrame
+         resultados.loc[len(resultados)] = ["BET_BI", "Hay poros cuello de botella", "-", "-", "-"]
+    else:
+        resultados.loc[len(resultados)] = ["BET_BI", "No hay poros cuello de botella", "-", "-", "-"]
+    resultado_p = BET_P(df, archivo_planilla, Rango_de_Absorpcion, Rango_de_Desorpcion)
+    if resultado_p:
+        # Añadir resultados al DataFrame
+        resultados.loc[len(resultados)] = ["BET_P", "Hay poros planos", "-", "-", "-"]
+    else:
+        resultados.loc[len(resultados)] = ["BET_P", "No hay poros planos", "-", "-", "-"]   
+        
+    resultado_c = BET_C(df, archivo_planilla, Rango_de_Absorpcion, Rango_de_Desorpcion)
+    if resultado_c:
+        # Añadir resultados al DataFrame
+        resultados.loc[len(resultados)] = ["BET_C","Hay poros cilindricos", "-", "-", "-"]  
+    else:
+        resultados.loc[len(resultados)] = ["BET_C","No hay poros cilindricos", "-", "-", "-"]          
+    # Guardar los resultados en una nueva hoja del archivo Excel
+    agregar_dataframe_a_nueva_hoja(archivo_planilla,  resultados, "Resultados Tests")
+    
+    # Generar gráficos (ejemplo: histograma de 'Volume @ STP')
+    plt.hist(df['Volume @ STP'], bins=20, color='blue', alpha=0.7)
+    plt.title("Histograma de Volume @ STP")
+    plt.xlabel("Volume @ STP")
+    plt.ylabel("Frecuencia")
+    grafico_path = os.path.join(os.path.dirname(archivo_ruta_completa), "histograma.png")
+    plt.savefig(grafico_path)
+    plt.close()
+
+    # Insertar gráfico en la hoja de Excel
+    wb = openpyxl.load_workbook(archivo_planilla)
+    if "Resultados Tests" in wb.sheetnames:
+        ws = wb["Resultados Tests"]
+        img = openpyxl.drawing.image.Image(grafico_path)
+        ws.add_image(img, "G1")
+    wb.save(archivo_planilla)
+
+    print("Proceso completado y gráficos generados.")
