@@ -4,7 +4,7 @@ import threading
 from methods_to_df import df_main
 from graphs import graphs_main
 from datetime import datetime
-
+from tests import tests_main
 
 # Archivo de configuración
 config_file = "config.ini"
@@ -17,6 +17,18 @@ def ejecutar_modulo_grafico(funcion):
     ventana.quit()
     ventana.destroy()
     funcion(ruta_csv)
+
+def ejecutar_modulo_tests(funcion):
+     #Obtener los valores de los campos de texto
+    rango_absorcion = int(Rango_de_Absorpcion.get())  # Convertir a entero
+    rango_desorcion = int(Rango_de_Desorpcion.get())  # Convertir a entero
+    """Ejecutar una función pasando las rutas como argumentos."""
+    ruta_csv = entry_csv.get()
+    print(f"Ejecutando {funcion.__name__} con rutas:")
+    print(f"CSV: {ruta_csv}")
+    ventana.quit()
+    ventana.destroy()
+    funcion(ruta_csv,rango_absorcion,rango_desorcion)
 
 # Función genérica para ejecutar módulos con rutas
 def ejecutar_modulo(funcion):
@@ -74,7 +86,7 @@ def guardar_configuracion():
 # Crear ventana principal
 ventana = Tk()
 ventana.title("Selector de Rutas")
-ventana.geometry("1000x500")
+ventana.geometry("1000x600")
 ventana.resizable(False, False)
 
 # Etiquetas y campos de entrada
@@ -104,6 +116,19 @@ Button(ventana, text="Guardar Configuración", command=guardar_configuracion).gr
 Button(ventana, text="Ejecutar Metodos", command=lambda: ejecutar_modulo(df_main)).grid(row=6, column=1, pady=10)
 
 Button(ventana, text="Dibujar", command=lambda: ejecutar_modulo_grafico(graphs_main)(grphs_main)).grid(row=8, column=1, pady=10)
+
+Button(ventana, text="Hacer los tests", command=lambda: ejecutar_modulo_tests(tests_main)).grid(row=10, column=1, pady=10)
+
+# Etiqueta y entrada para el Rango de Absorción
+Label(ventana, text="Rango de Absorción:").grid(row=4, column=0, padx=5, pady=2, sticky="w")  # Etiqueta en columna 0
+Rango_de_Absorpcion = Entry(ventana, width=7)  # Reducir ancho
+Rango_de_Absorpcion.grid(row=6, column=0, padx=1, pady=1)  # Entrada en columna 0
+
+# Etiqueta y entrada para el Rango de Desorción
+Label(ventana, text="Rango de Desorción:").grid(row=8, column=0, padx=5, pady=2, sticky="w")  # Etiqueta en columna 0
+Rango_de_Desorpcion = Entry(ventana, width=7)  # Reducir ancho
+Rango_de_Desorpcion.grid(row=10, column=0, padx=1, pady=1)  # Entrada en columna 0
+
 
 # Cargar configuración inicial
 cargar_configuracion()
