@@ -19,7 +19,6 @@ from pandas import ExcelWriter
 from openpyxl import load_workbook
 from pandas import ExcelWriter
 
-
 def agregar_dataframe_a_nueva_hoja(archivo_excel, dataframe, nombre_hoja):
     # Cargar el archivo Excel existente
     book = load_workbook(archivo_excel)
@@ -33,9 +32,6 @@ def agregar_dataframe_a_nueva_hoja(archivo_excel, dataframe, nombre_hoja):
         dataframe.to_excel(writer, sheet_name=nombre_hoja, index=False)
             
 def BET_BI(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
-    # Normalizar la ruta del archivo
-    ruta_excel = os.path.normpath(ruta_excel)
-    ruta_excel = os.path.join(ruta_excel, "Report.xlsx")
 
     # Verificar si las columnas necesarias existen en el DataFrame
     if 'Volume @ STP' not in df.columns or '1 / [ W((P/Po) - 1) ]' not in df.columns:
@@ -88,9 +84,6 @@ def BET_BI(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
    
         
 def BET_P(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
-    # Normalizar la ruta del archivo
-    ruta_excel = os.path.normpath(ruta_excel)
-    ruta_excel = os.path.join(ruta_excel, "Report.xlsx")
 
     # Verificar si las columnas necesarias existen en el DataFrame
     if 'Volume @ STP' not in df.columns or '1 / [ W((P/Po) - 1) ]' not in df.columns:
@@ -158,9 +151,7 @@ def BET_P(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
         return False
     # Filtrar los últimos N elementos según el valor de Rango_de_Desorpcion
 def BET_C(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
-    # Normalizar la ruta del archivo
-    ruta_excel = os.path.normpath(ruta_excel)
-    ruta_excel = os.path.join(ruta_excel, "Report.xlsx")
+
 
     # Verificar si las columnas necesarias existen en el DataFrame
     if 'Volume @ STP' not in df.columns or '1 / [ W((P/Po) - 1) ]' not in df.columns:
@@ -218,23 +209,13 @@ def BET_C(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
     else:
         return False
     # Filtrar los últimos N elementos según el valor de Rango_de_Desorpcion
-def tests_main(archivo_ruta_completa, Rango_de_Absorpcion, Rango_de_Desorpcion):
+def tests_main(archivo_ruta_completa, Rango_de_Absorpcion, Rango_de_Desorpcion,archivo_planilla):
     print("Inicio de graphs_main")
     print(archivo_ruta_completa)
         
     # Imprimir o procesar los valores obtenidos
     print(f"Rango de Absorción: {Rango_de_Absorpcion}")
     print(f"Rango de Desorción: {Rango_de_Desorpcion}")
-    # Construir la ruta del archivo correctamente
-
-  
-    archivo_ruta_completa = archivo_ruta_completa.replace("/", "\\")  # Reemplazar barras normales por barras invertidas
-        
-    # O usar normpath para normalizar la ruta según el sistema operativo
-    archivo_ruta_completa = os.path.normpath(archivo_ruta_completa)
-    archivo_planilla = os.path.join(archivo_ruta_completa, "Reporte.xlsx")
-
-
 
     # Crear un DataFrame para almacenar los resultados
     resultados = pd.DataFrame(columns=["Test", "Resultado", "Promedio_A", "Promedio_B", "División"])

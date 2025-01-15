@@ -619,18 +619,13 @@ def hilo_guardar_dataframe_en_ini(df, archivo_ini, resultado_dict):
     except Exception as e:
         resultado_dict['error'] = f"Error al guardar INI: {e}"
         
-def df_main(path_qps, path_csv, path_novawin):
+def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
     
     resultado_dict = {}
     ruta_excel=path_csv
   
     print("Inicio de df_main")
     
-    print(ruta_excel)
-    
-    # Construir la ruta del archivo correctamente
-    archivo_planilla = os.path.join(ruta_excel, "Reporte.xlsx")
-
     # Imprimir la ruta completa
     print(archivo_planilla)
     # Si el archivo ya existe, eliminarlo

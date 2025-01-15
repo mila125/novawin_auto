@@ -109,14 +109,11 @@ def draw_HK(df):
     plt.tight_layout()
     plt.show()
 
-def graphs_main(archivo_ruta_completa):
+def graphs_main(archivo_planilla):
     print("Inicio de graphs_main")
-    print(archivo_ruta_completa)
-    
-    # Construir la ruta del archivo correctamente
-    archivo_planilla = os.path.join(archivo_ruta_completa, "Reporte.xlsx")
-    
-         # Crear un diccionario para almacenar los valores extraídos
+    print(archivo_planilla)
+       
+    # Crear un diccionario para almacenar los valores extraídos
     valores_nkaffha = {}
     
     # Leer los datos de la hoja 'NKA'

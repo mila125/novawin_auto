@@ -86,21 +86,33 @@ def agregar_dataframe_a_excel_sin_borrar(ruta_excel, nuevo_dataframe):
     except Exception as e:
         print(f"Error al agregar el DataFrame a Excel: {e}")
         raise
-def generar_nombre_unico(base_path,namext):
+import os
+from datetime import datetime
+
+def generar_nombre_unico(base_path, namext):
     # Normalizar las barras a formato Unix (/)
     base_path = base_path.replace("\\", "/")
     
     if not base_path.endswith(namext):
         base_path += namext
+
+    # Extraer nombre base y extensión
+    name, ext = os.path.splitext(base_path)
     
+    # Agregar fecha y hora actual al nombre base
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    name_with_timestamp = f"{name}_{timestamp}"
+    base_path = f"{name_with_timestamp}{ext}"
+    
+    # Asegurarse de que el nombre sea único
     counter = 1
     while os.path.exists(base_path):
-        name, ext = os.path.splitext(base_path)
-        base_path = f"{name}_{counter}{ext}"
+        base_path = f"{name_with_timestamp}_{counter}{ext}"
         counter += 1
     
     # Normalizar las barras de regreso a formato Windows (\)
     return base_path.replace("/", "\\")
+    
 def manejar_novawin(path_novawin, archivo_qps):
     try:
         # Invertir las barras en la ruta del archivo
