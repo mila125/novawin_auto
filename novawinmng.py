@@ -247,3 +247,5 @@ def close_window_novawin():
         print("La ventana de NovaWin ha sido cerrada.")
     except Exception as e:
         print(f"Error al cerrar la ventana de NovaWin: {e}")
+def ejecutar_ide():
+    subprocess.run(["python", "-m", "novarep_ide"])

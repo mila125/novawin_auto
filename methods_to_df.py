@@ -598,8 +598,11 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
     queue = Queue()
 
     resultado_dict = {}
-    ruta_excel=path_csv
-  
+
+    archivo_planilla = archivo_planilla.replace("/", "\\")  # Reemplazar barras normales por barras invertidas
+    # Normalizar la ruta del archivo
+    archivo_planilla = os.path.normpath(archivo_planilla)
+
     print("Inicio de df_main")
     
     # Imprimir la ruta completa
@@ -608,23 +611,21 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
     if os.path.exists(archivo_planilla):
       os.remove(archivo_planilla)
       print(f"Archivo '{archivo_planilla}' eliminado.")
-
-    # Crear un nuevo archivo Excel
-    wb = Workbook()
-    hoja = wb.active
-    hoja.title = "Leeme"
-    hoja["A1"] = "Datos de analisis hecho en NovaWin"  # Agregar un título en la celda A1
-
-    # Guardar el archivo_planilla
-    wb.save(archivo_planilla)
-    print(f"Archivo '{archivo_planilla}' creado nuevamente.")
+ 
+    # Crear el archivo Excel si no existe
+    if not os.path.exists(archivo_planilla):
+     workbook = Workbook()
+     hoja = workbook.active
+     hoja.title = "Leeme"
+     hoja["A1"] = "Datos de analisis hecho en NovaWin"  # Agregar un título en la celda A1
+     workbook.save(archivo_planilla)
+     print(f"Archivo Excel creado en: {archivo_planilla}")
+    else:
+     print(f"El archivo ya existe en: {archivo_planilla}")
+    
     try:
         # Inicializar y manejar NovaWin
         app, main_window = manejar_novawin(path_novawin, path_qps)
-
-        # Exportar reportes y guardar la ruta de los archivos exportados
-        #ruta_csv_HK = exportar_reporte_HK(main_window, path_csv, app)
-     
 
         hilo_exportacion_HK = threading.Thread(target=hilo_exportar_HK, args=(main_window, path_csv, app, queue))
         hilo_exportacion_HK.start()
@@ -655,16 +656,6 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
-         # Exportar reportes y guardar la ruta de los archivos exportados
-        #ruta_csv_DFT = exportar_reporte_DFT(main_window, path_csv, app)
-        #print(f"Archivo exportado a: {ruta_csv_DFT}")
-
-
-        # Mostrar el archivo exportado
-        #if ruta_csv_DFT:
-        #    print(f"Archivo exportado exitosamente: {ruta_csv_DFT}")
-        #else:
-        #    print("No se exportó ningún archivo.")
 
         # Crear un hilo para la exportación (ya no es necesario exportar de nuevo)
         hilo_exportacion_DFT = threading.Thread(target=hilo_exportar_DFT, args=(main_window, path_csv, app,queue))
@@ -690,10 +681,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
-         # Exportar reportes y guardar la ruta de los archivos exportados
-        #ruta_csv_BJHD = exportar_reporte_BJHD(main_window, path_csv, app)
-        print(f"Archivo exportado a: {ruta_csv_BJHD}")
-
+       
         # Crear un hilo para la exportación (ya no es necesario exportar de nuevo)
         hilo_exportacion_BJHD = threading.Thread(target=hilo_exportar_BJHD, args=(main_window, path_csv, app,queue))
         hilo_exportacion_BJHD.start()
@@ -705,12 +693,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         if ruta_csv_BJHD is None:
            raise ValueError("La exportación no devolvió una ruta válida. Verifica la función exportar_reporte_BJHD.")
         close_window_novawin()
-        # Mostrar el archivo exportado
-        #if ruta_csv_BJHD:
-        #    print(f"Archivo exportado exitosamente: {ruta_csv_BJHD}")
-        #else:
-        #    print("No se exportó ningún archivo.")
-
+       
         # Crear DataFrame y guardar
         dataframe = leer_csv_y_crear_dataframe(ruta_csv_BJHD)
         print(dataframe)
@@ -722,10 +705,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
-         # Exportar reportes y guardar la ruta de los archivos exportados
-        #ruta_csv_BJHA = exportar_reporte_BJHA(main_window, path_csv, app)
-        print(f"Archivo exportado a: {ruta_csv_BJHA}")
-
+       
         # Crear un hilo para la exportación (ya no es necesario exportar de nuevo)
         hilo_exportacion_BJHA = threading.Thread(target=hilo_exportar_BJHA, args=(main_window, path_csv, app,queue))
         hilo_exportacion_BJHA.start()
@@ -736,12 +716,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         ruta_csv_BJHA = queue.get() 
         if ruta_csv_BJHA is None:
            raise ValueError("La exportación no devolvió una ruta válida. Verifica la función exportar_reporte_BJHA.")
-        # Mostrar el archivo exportado
-        #if ruta_csv_BJHA:
-        #    print(f"Archivo exportado exitosamente: {ruta_csv_BJHA}")
-        #else:
-        #    print("No se exportó ningún archivo.")
-
+        close_window_novawin()
         # Crear DataFrame y guardar
         dataframe = leer_csv_y_crear_dataframe(ruta_csv_BJHA)
         print(dataframe)
@@ -755,10 +730,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         
           # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
-         # Exportar reportes y guardar la ruta de los archivos exportados
-        #ruta_csv_FFHA = exportar_reporte_FFHA(main_window, path_csv, app)
-        print(f"Archivo exportado a: {ruta_csv_FFHA}")
-
+    
         # Crear un hilo para la exportación (ya no es necesario exportar de nuevo)
         hilo_exportacion_FFHA = threading.Thread(target=hilo_exportar_FFHA, args=(main_window, path_csv, app,queue))
         hilo_exportacion_FFHA.start()
@@ -769,12 +741,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         ruta_csv_FFHA = queue.get() 
         if ruta_csv_FFHA is None:
            raise ValueError("La exportación no devolvió una ruta válida. Verifica la función exportar_reporte_FFHA.")
-        # Mostrar el archivo exportado
-        #if ruta_csv_FFHA:
-        #    print(f"Archivo exportado exitosamente: {ruta_csv_FFHA}")
-        #else:
-        #    print("No se exportó ningún archivo.")
-
+        close_window_novawin()
         # Crear DataFrame y guardar
         dataframe = leer_csv_y_crear_dataframe(ruta_csv_FFHA)
         print(dataframe)
@@ -784,14 +751,10 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         hilo_leer_csv_FFHA.join()
         agregar_dataframe_a_nueva_hoja(archivo_planilla, "FFHA", dataframe)
         #guardar_dataframe_en_ini(dataframe, path_csv+"dataframe.ini")
-        
-        
+         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
-         # Exportar reportes y guardar la ruta de los archivos exportados
-        #ruta_csv_NKA = exportar_reporte_NKA(main_window, path_csv, app)
-        print(f"Archivo exportado a: {ruta_csv_NKA}")
-
+        
         # Crear un hilo para la exportación (ya no es necesario exportar de nuevo)
         hilo_exportacion_NKA = threading.Thread(target=hilo_exportar_NKA, args=(main_window, path_csv, app,queue))
         hilo_exportacion_NKA.start()
@@ -801,12 +764,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         ruta_csv_NKA = queue.get() 
         if ruta_csv_NKA is None:
            raise ValueError("La exportación no devolvió una ruta válida. Verifica la función exportar_reporte_NKA.")
-        # Mostrar el archivo exportado
-        #if ruta_csv_NKA:
-        #    print(f"Archivo exportado exitosamente: {ruta_csv_NKA}")
-        #else:
-         #   print("No se exportó ningún archivo.")
-
+        close_window_novawin()
         # Crear DataFrame y guardar
         dataframe = leer_csv_y_crear_dataframe(ruta_csv_NKA)
         print(dataframe)
@@ -819,10 +777,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         
         # Inicializar y manejar NovaWin nuevamente
         app, main_window = manejar_novawin(path_novawin, path_qps)
-         # Exportar reportes y guardar la ruta de los archivos exportados
-        #ruta_csv_BET = exportar_reporte_BET(main_window, path_csv, app)
-        print(f"Archivo exportado a: {ruta_csv_BET}")
-
+    
         # Crear un hilo para la exportación (ya no es necesario exportar de nuevo)
         hilo_exportacion_BET = threading.Thread(target=hilo_exportar_BET, args=(main_window, path_csv, app,queue))
         hilo_exportacion_BET.start()
@@ -832,12 +787,7 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         ruta_csv_BET = queue.get() 
         if ruta_csv_BET is None:
            raise ValueError("La exportación no devolvió una ruta válida. Verifica la función exportar_reporte_BET.")
-        # Mostrar el archivo exportado
-        #if ruta_csv_BET:
-        #    print(f"Archivo exportado exitosamente: {ruta_csv_BET}")
-        #else:
-        #    print("No se exportó ningún archivo.")
-
+        close_window_novawin()
         # Crear DataFrame y guardar
         dataframe = leer_csv_y_crear_dataframe(ruta_csv_BET)
         
@@ -876,7 +826,12 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
         # Continuar con otras tareas si es necesario
         print("Proceso completado exitosamente.")
         # Ejecutar un módulo específico
-        subprocess.run(["python", "-m", "novarep_ide"])
+        # Crear y ejecutar la hebra
+        hebra = threading.Thread(target=ejecutar_ide)
+        hebra.start()
+
+        print("El comando se está ejecutando en una hebra separada.")
+        hebra.join()
     except Exception as e:
-        print(f"Error en hk_main: {e}")
+        print(f"Error en df_main: {e}")
         traceback.print_exc()

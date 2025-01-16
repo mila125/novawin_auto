@@ -45,8 +45,7 @@ def cargar_informe_BET(tests_main):
 def ejecutar_modulo_tests(funcion):
     # Obtener los valores seleccionados en las ComboBox
     try:
-        rango_absorcion = int(combo_absorcion.get())  # Convertir a entero
-        rango_desorcion = int(combo_desorcion.get())  # Convertir a entero
+
 
         # Obtener la ruta del archivo
         ruta_csv = entry_csv.get()
@@ -59,12 +58,11 @@ def ejecutar_modulo_tests(funcion):
         if ruta_csv:
             print(f"Ejecutando {funcion.__name__} con rutas:")
             print(f"CSV: {ruta_csv}")
-            print(f"Rango de Absorción: {rango_absorcion}")
-            print(f"Rango de Desorción: {rango_desorcion}")
+
 
             ventana.quit()
             ventana.destroy()
-            funcion(ruta_csv, rango_absorcion, rango_desorcion,ruta_excel)
+            funcion(ruta_csv,ruta_excel)
         else:
             label_estado.config(text="Error: No se ha cargado ningún archivo.")
     except ValueError:
@@ -200,19 +198,7 @@ Button(ventana, text="Cargar informe BET", command=lambda: cargar_informe_BET(te
 
 Button(ventana, text="Hacer los tests", command=lambda: ejecutar_modulo_tests(tests_main)).grid(row=12, column=1, pady=10)
 
-# Etiqueta y ComboBox para el Rango de Absorción
-Label(ventana, text="Rango de Absorción:").grid(row=4, column=0, padx=5, pady=5, sticky="w")
-combo_absorcion = ttk.Combobox(ventana, width=5)
-combo_absorcion.grid(row=6, column=0, padx=5, pady=5)
 
-# Etiqueta y ComboBox para el Rango de Desorción
-Label(ventana, text="Rango de Desorción:").grid(row=8, column=0, padx=5, pady=5, sticky="w")
-combo_desorcion = ttk.Combobox(ventana, width=5)
-combo_desorcion.grid(row=10, column=0, padx=5, pady=5)
-
-# Etiqueta de estado
-label_estado = Label(ventana, text="", fg="green")
-label_estado.grid(row=14, column=0, columnspan=3, pady=5)
 
 # Cargar configuración inicial
 cargar_configuracion()

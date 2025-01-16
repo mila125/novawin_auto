@@ -209,33 +209,52 @@ def BET_C(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
     else:
         return False
     # Filtrar los últimos N elementos según el valor de Rango_de_Desorpcion
-def tests_main(archivo_ruta_completa, Rango_de_Absorpcion, Rango_de_Desorpcion,archivo_planilla):
+def tests_main(archivo_ruta_completa,archivo_planilla):
     print("Inicio de graphs_main")
     print(archivo_ruta_completa)
-        
-    # Imprimir o procesar los valores obtenidos
-    print(f"Rango de Absorción: {Rango_de_Absorpcion}")
-    print(f"Rango de Desorción: {Rango_de_Desorpcion}")
-
+    
     # Crear un DataFrame para almacenar los resultados
     resultados = pd.DataFrame(columns=["Test", "Resultado", "Promedio_A", "Promedio_B", "División"])
     # Leer los datos de la hoja 'BET'
     df = pd.read_excel(archivo_planilla,sheet_name='BET') 
+    
+    # Calcular el cambio relativo en la columna 'Relative Pressure'
+    df['delta_pressure'] = df['Relative Pressure'].diff()
+
+    # Identificar índices donde ocurre una disminución significativa
+    # Aquí -0.05 es un ejemplo; ajusta según tus datos.
+    umbral_disminucion = -0.05
+    puntos_disminucion = df[df['delta_pressure'] < umbral_disminucion]
+
+    print("Puntos de disminución:")
+    print(puntos_disminucion)  
+
+    # Separar los datos en rangos de absorción y desorción según los cambios
+    Rango_de_Absorpcion = df[df['delta_pressure'] >= 0]  # Zonas de aumento o estabilidad
+    Rango_de_Desorpcion = df[df['delta_pressure'] < 0]   # Zonas de disminución
+
+    print("Rango de absorción:")
+    print(Rango_de_Absorpcion)
+
+    print("Rango de desorción:")
+    print(Rango_de_Desorpcion) 
+    num_absorcion = len(Rango_de_Absorpcion)
+    num_desorcion = len(Rango_de_Desorpcion)
     # Ejecución de los tests
-    resultado_bi = BET_BI(df, archivo_planilla, Rango_de_Absorpcion, Rango_de_Desorpcion)
+    resultado_bi = BET_BI(df, archivo_planilla, num_absorcion, num_desorcion)
     if resultado_bi:
          # Añadir resultados al DataFrame
          resultados.loc[len(resultados)] = ["BET_BI", "Hay poros cuello de botella", "-", "-", "-"]
     else:
         resultados.loc[len(resultados)] = ["BET_BI", "No hay poros cuello de botella", "-", "-", "-"]
-    resultado_p = BET_P(df, archivo_planilla, Rango_de_Absorpcion, Rango_de_Desorpcion)
+    resultado_p = BET_P(df, archivo_planilla, num_absorcion, num_desorcion)
     if resultado_p:
         # Añadir resultados al DataFrame
         resultados.loc[len(resultados)] = ["BET_P", "Hay poros planos", "-", "-", "-"]
     else:
         resultados.loc[len(resultados)] = ["BET_P", "No hay poros planos", "-", "-", "-"]   
         
-    resultado_c = BET_C(df, archivo_planilla, Rango_de_Absorpcion, Rango_de_Desorpcion)
+    resultado_c = BET_C(df, archivo_planilla, num_absorcion, num_desorcion)
     if resultado_c:
         # Añadir resultados al DataFrame
         resultados.loc[len(resultados)] = ["BET_C","Hay poros cilindricos", "-", "-", "-"]  
