@@ -237,3 +237,13 @@ def guardar_dataframe_en_ini(df, archivo_ini):
     except Exception as e:
         print(f"Error al guardar INI: {e}")
         raise
+def close_window_novawin():
+    try:
+        # Conectar a la ventana de NovaWin
+        app = Application(backend='uia').connect(title_re='.*NovaWin.*')
+        window = app.window(title_re='.*NovaWin.*')
+        # Cerrar la ventana
+        window.close()
+        print("La ventana de NovaWin ha sido cerrada.")
+    except Exception as e:
+        print(f"Error al cerrar la ventana de NovaWin: {e}")

@@ -15,29 +15,31 @@ config_file = "config.ini"
 
 # Función para cargar la hoja BET del archivo Excel
 def cargar_informe_BET(tests_main):
-    ruta_csv = filedialog.askopenfilename(
-        filetypes=[("Archivos de Excel", "*.xlsx"), ("Todos los archivos", "*.*")]
-    )
-    if ruta_csv:
-        entry_csv.delete(0, END)
-        entry_csv.insert(0, ruta_csv)
-        try:
-            # Leer únicamente la hoja BET
-            df = pd.read_excel(ruta_csv, sheet_name="BET")
+     # Obtener la ruta del archivo
+    ruta_csv = entry_csv.get()
+    # Corregir las barras
+    ruta_csv = ruta_csv.replace("/", "\\")  # Reemplazar barras normales por barras invertidas
+    # Normalizar la ruta del archivo
+    ruta_excel = os.path.normpath(ruta_csv)
+    ruta_excel = os.path.join(ruta_excel, "Reporte.xlsx")
+   
+    try:
+        # Leer únicamente la hoja BET
+        df = pd.read_excel(ruta_excel, sheet_name="BET")
             
-            # Verificar si la columna "Relative Pressure" existe
-            if "Relative Pressure" in df.columns:
-                relative_pressure_values = df["Relative Pressure"].dropna().tolist()
+        # Verificar si la columna "Relative Pressure" existe
+        if "Relative Pressure" in df.columns:
+            relative_pressure_values = df["Relative Pressure"].dropna().tolist()
                 
-                # Ajustar las ComboBox con la cantidad máxima de valores disponibles
-                combo_absorcion["values"] = list(range(1, len(relative_pressure_values) + 1))
-                combo_desorcion["values"] = list(range(1, len(relative_pressure_values) + 1))
+            # Ajustar las ComboBox con la cantidad máxima de valores disponibles
+            combo_absorcion["values"] = list(range(1, len(relative_pressure_values) + 1))
+            combo_desorcion["values"] = list(range(1, len(relative_pressure_values) + 1))
                 
-                label_estado.config(text=f"Datos cargados correctamente. {len(relative_pressure_values)} valores disponibles.")
-            else:
-                label_estado.config(text="Error: La columna 'Relative Pressure' no existe en la hoja BET.")
-        except Exception as e:
-            label_estado.config(text=f"Error al cargar el archivo: {str(e)}")
+            label_estado.config(text=f"Datos cargados correctamente. {len(relative_pressure_values)} valores disponibles.")
+        else:
+            label_estado.config(text="Error: La columna 'Relative Pressure' no existe en la hoja BET.")
+    except Exception as e:
+        label_estado.config(text=f"Error al cargar el archivo: {str(e)}")
 
 # Función para ejecutar el módulo de tests
 def ejecutar_modulo_tests(funcion):
