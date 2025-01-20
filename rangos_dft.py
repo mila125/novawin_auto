@@ -19,6 +19,7 @@ from pandas import ExcelWriter
 from openpyxl import load_workbook
 from pandas import ExcelWriter
 import subprocess
+
 def agregar_dataframe_a_nueva_hoja(archivo_excel, dataframe, nombre_hoja):
     # Cargar el archivo Excel existente
     book = load_workbook(archivo_excel)
@@ -208,80 +209,79 @@ def BET_C(df, ruta_excel, Rango_de_Absorpcion, Rango_de_Desorpcion):
         return True
     else:
         return False
-    # Filtrar los últimos N elementos según el valor de Rango_de_Desorpcion
-def tests_main(archivo_ruta_completa,archivo_planilla):
-    print("Inicio de graphs_main")
-    print(archivo_ruta_completa)
+
+def rangos_dft_main(archivo_ruta_completa, archivo_planilla):
+    """
+    Procesa un archivo para clasificar los datos en 5 dataframes según rangos definidos
+    en la columna 'Half pore width', calcula los valores de 'Cumulative Pore Volume'
+    de la última fila de cada rango, y escribe estos valores con sus etiquetas en la hoja 'DFT'.
     
-    # Crear un DataFrame para almacenar los resultados
-    resultados = pd.DataFrame(columns=["Test", "Resultado", "Promedio_A", "Promedio_B", "División"])
-    # Leer los datos de la hoja 'BET'
-    df = pd.read_excel(archivo_planilla,sheet_name='BET') 
+    Args:
+    archivo_ruta_completa (str): Ruta completa del archivo que contiene los datos.
+    archivo_planilla (str): Tipo de archivo ('csv' o 'excel').
     
-    # Calcular el cambio relativo en la columna 'Relative Pressure'
-    df['delta_pressure'] = df['Relative Pressure'].diff()
-
-    # Identificar índices donde ocurre una disminución significativa
-    # Aquí -0.05 es un ejemplo; ajusta según tus datos.
-    umbral_disminucion = -0.05
-    puntos_disminucion = df[df['delta_pressure'] < umbral_disminucion]
-
-    print("Puntos de disminución:")
-    print(puntos_disminucion)  
-
-    # Separar los datos en rangos de absorción y desorción según los cambios
-    Rango_de_Absorpcion = df[df['delta_pressure'] >= 0]  # Zonas de aumento o estabilidad
-    Rango_de_Desorpcion = df[df['delta_pressure'] < 0]   # Zonas de disminución
-
-    print("Rango de absorción:")
-    print(Rango_de_Absorpcion)
-
-    print("Rango de desorción:")
-    print(Rango_de_Desorpcion) 
-    num_absorcion = len(Rango_de_Absorpcion)
-    num_desorcion = len(Rango_de_Desorpcion)
-    # Ejecución de los tests
-    resultado_bi = BET_BI(df, archivo_planilla, num_absorcion, num_desorcion)
-    if resultado_bi:
-         # Añadir resultados al DataFrame
-         resultados.loc[len(resultados)] = ["BET_BI", "Hay poros cuello de botella", "-", "-", "-"]
+    Returns:
+    dict: Un diccionario con los 5 dataframes correspondientes a cada rango y los valores
+          'Cumulative Pore Volume' para la última fila de cada dataframe.
+    """
+    print("Inicio de tests_main")
+    print(f"Archivo ruta completa: {archivo_ruta_completa}")
+    
+    # Carga del archivo
+    if archivo_planilla.lower() == 'csv':
+        raise ValueError("Para escribir en la hoja de cálculo, utiliza un archivo Excel.")
+    elif archivo_planilla.lower() in ['excel', 'xlsx']:
+        df = pd.read_excel(archivo_ruta_completa, sheet_name="DFT")
     else:
-        resultados.loc[len(resultados)] = ["BET_BI", "No hay poros cuello de botella", "-", "-", "-"]
-    resultado_p = BET_P(df, archivo_planilla, num_absorcion, num_desorcion)
-    if resultado_p:
-        # Añadir resultados al DataFrame
-        resultados.loc[len(resultados)] = ["BET_P", "Hay poros planos", "-", "-", "-"]
-    else:
-        resultados.loc[len(resultados)] = ["BET_P", "No hay poros planos", "-", "-", "-"]   
+        raise ValueError("Formato de archivo no soportado. Usa 'excel'.")
+    
+    print("Archivo cargado exitosamente.")
+    
+    # Filtrar datos en diferentes rangos
+    rangos = {
+        "MICRO": (0, 10.5),
+        "UNCLASS": (10.49, 18.9),
+        "BOTLE": (18.89, 24.8),
+        "PLATE": (24.79, 109.7),
+        "CYL": (109.69, float('inf'))
+    }
+    
+    dataframes = {}
+    cumulative_pore_volumes = {}
+    
+    for nombre, (min_val, max_val) in rangos.items():
+        # Filtrar datos dentro del rango
+        rango_df = df[(df['Half pore width'] > min_val) & (df['Half pore width'] <= max_val)]
+        dataframes[nombre] = rango_df
         
-    resultado_c = BET_C(df, archivo_planilla, num_absorcion, num_desorcion)
-    if resultado_c:
-        # Añadir resultados al DataFrame
-        resultados.loc[len(resultados)] = ["BET_C","Hay poros cilindricos", "-", "-", "-"]  
-    else:
-        resultados.loc[len(resultados)] = ["BET_C","No hay poros cilindricos", "-", "-", "-"]          
-    # Guardar los resultados en una nueva hoja del archivo Excel
-    agregar_dataframe_a_nueva_hoja(archivo_planilla,  resultados, "Resultados Tests")
+        # Obtener el valor de 'Cumulative Pore Volume' de la última fila
+        if not rango_df.empty:
+            cumulative_pore_volumes[f"RANGO_CV_{nombre}"] = rango_df['Cumulative Pore Volume'].iloc[-1]
+        else:
+            cumulative_pore_volumes[f"RANGO_CV_{nombre}"] = None
+        
+        print(f"Datos filtrados para {nombre}: {len(rango_df)} filas.")
     
-    # Generar gráficos (ejemplo: histograma de 'Volume @ STP')
-    plt.hist(df['Volume @ STP'], bins=20, color='blue', alpha=0.7)
-    plt.title("Histograma de Volume @ STP")
-    plt.xlabel("Volume @ STP")
-    plt.ylabel("Frecuencia")
-    grafico_path = os.path.join(os.path.dirname(archivo_ruta_completa), "histograma.png")
-    plt.savefig(grafico_path)
-    plt.close()
-
-    # Insertar gráfico en la hoja de Excel
-    wb = openpyxl.load_workbook(archivo_planilla)
-    if "Resultados Tests" in wb.sheetnames:
-        ws = wb["Resultados Tests"]
-        img = openpyxl.drawing.image.Image(grafico_path)
-        ws.add_image(img, "G1")
-    wb.save(archivo_planilla)
-
-    print("Proceso completado y gráficos generados.")
-    # Ejecutar un módulo específico
+    # Escribir los resultados en la hoja 'DFT'
+    with pd.ExcelWriter(archivo_ruta_completa, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+        # Crear un dataframe con los valores y etiquetas
+        resultados = pd.DataFrame({
+            "Etiqueta": ["MICRO", "UNCLASS", "BOTLE", "PLATE", "CYL"],
+            "Valor": [
+                cumulative_pore_volumes["RANGO_CV_MICRO"],
+                cumulative_pore_volumes["RANGO_CV_UNCLASS"],
+                cumulative_pore_volumes["RANGO_CV_BOTLE"],
+                cumulative_pore_volumes["RANGO_CV_PLATE"],
+                cumulative_pore_volumes["RANGO_CV_CYL"]
+            ]
+        })
+        
+        # Escribir en la hoja 'DFT', comenzando en una celda específica (por ejemplo, B2)
+        resultados.to_excel(writer, sheet_name="DFT", index=False, startrow=1, startcol=1, header=True)
+    
+    print("Valores escritos en la hoja 'DFT'.")
+    #return dataframes, cumulative_pore_volumes
+     # Ejecutar un módulo específico
     # Crear y ejecutar la hebra
     result = subprocess.run(["python", "-m", "novarep_ide"], capture_output=True, text=True)
     print("Salida estándar:", result.stdout)

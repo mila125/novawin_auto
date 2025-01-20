@@ -14,6 +14,7 @@ from openpyxl import Workbook
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import subprocess
 
 def draw_comparison_bar_chart(bjhd, bjha):
     # Filtrar las columnas necesarias para ambos dataframes
@@ -132,9 +133,22 @@ def graphs_main(archivo_planilla):
         valores_ffha.reset_index(drop=True)
     ], keys=['NKA', 'FFHA'], names=['Sheet', 'Index'])
     
-    # Guardar en una nueva hoja llamada 'NKAFFHA_valores'
-    with pd.ExcelWriter(archivo_planilla, mode='a', engine='openpyxl') as writer:
-        nuevo_df.to_excel(writer, sheet_name='NKAFFHA_valores', index=False)
+     # Cargar el archivo Excel con openpyxl
+    try:
+       book = openpyxl.load_workbook(archivo_planilla)
+       # Si la hoja existe, elimínala
+       if 'NKAFFHA_valores' in book.sheetnames:
+         del book['NKAFFHA_valores']
+       book.save(archivo_planilla)
+    except FileNotFoundError:
+       # Si el archivo no existe, ignora el error
+       pass
+
+    # Ahora escribe el DataFrame en el archivo
+    with pd.ExcelWriter(archivo_planilla, engine='openpyxl', mode='a') as writer:
+      nuevo_df.to_excel(writer, sheet_name='NKAFFHA_valores', index=False)
+  
+ 
     print("Se ha creado la hoja 'NKAFFHA_valores' con los datos de las hojas 'NKA' y 'FFHA'.")
     
     # Leer el archivo Excel
@@ -157,4 +171,9 @@ def graphs_main(archivo_planilla):
     draw_comparison_bar_chart(df_bjhd, df_bjha)
     # Verificar las primeras filas del archivo para asegurarse de que las columnas existen
     print(df.head())
+    # Ejecutar un módulo específico
+
+    result = subprocess.run(["python", "-m", "novarep_ide"], capture_output=True, text=True)
+    print("Salida estándar:", result.stdout)
+    print("Errores estándar:", result.stderr)
 
