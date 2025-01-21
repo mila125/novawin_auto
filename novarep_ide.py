@@ -26,17 +26,23 @@ def ejecutar_modulo_rangos_dft_main(funcion):
             ruta_excel = ruta_excel.replace("/", "\\")  # Reemplazar barras normales por barras invertidas
             
             # Validar los valores y ejecutar la función
-            if ruta_csv and ruta_excel:
-                print(f"Ejecutando {funcion.__name__} con rutas:")
-                print(f"CSV: {ruta_csv}")
-                print(f"EXCEL: {ruta_excel}")
-                ventana.quit()
-                ventana.destroy()
-                funcion(ruta_csv, ruta_excel)
-            else:
-                label_estado.config(text="Error: No se ha cargado ningún archivo.", fg="red")
-        except ValueError:
-            label_estado.config(text="Error: Seleccione valores válidos en las ComboBox.", fg="red")
+
+            print(f"Ejecutando {funcion.__name__} con rutas:")
+            print(f"CSV: {ruta_csv}")
+            print(f"EXCEL: {ruta_excel}")
+            ventana.quit()
+            ventana.destroy()
+            funcion(ruta_csv, ruta_excel)
+      
+            try:
+              label_estado.config(text="Se ha cargado el archivo")
+            except TclError:
+              print("El widget 'label_estado' ya no está disponible.")
+        except ValueError:       
+            try:
+              label_estado.config(text="Error: Seleccione valores válidos en las ComboBox.")
+            except TclError:
+              print("El widget 'label_estado' ya no está disponible.")
 
 # Función para ejecutar el módulo de tests
 def ejecutar_modulo_tests(funcion):
@@ -57,10 +63,15 @@ def ejecutar_modulo_tests(funcion):
         ventana.quit()
         ventana.destroy()
         funcion(ruta_csv,ruta_excel)
-        label_estado.config(text="Se ha cargado el archivo")
-    except ValueError:
-        label_estado.config(text="Error: Seleccione valores válidos en las ComboBox.")
-
+        try:
+          label_estado.config(text="Se ha cargado el archivo")
+        except TclError:
+          print("El widget 'label_estado' ya no está disponible.")
+    except ValueError:       
+        try:
+          label_estado.config(text="Error: Seleccione valores válidos en las ComboBox.")
+        except TclError:
+          print("El widget 'label_estado' ya no está disponible.")
 # Función para cargar el archivo de Excel y crear el DataFrame
 def cargar_archivo():
 

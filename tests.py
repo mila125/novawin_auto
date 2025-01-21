@@ -19,6 +19,8 @@ from pandas import ExcelWriter
 from openpyxl import load_workbook
 from pandas import ExcelWriter
 import subprocess
+from openpyxl.utils.dataframe import dataframe_to_rows
+
 def agregar_dataframe_a_nueva_hoja(archivo_excel, dataframe, nombre_hoja):
     # Cargar el archivo Excel existente
     book = load_workbook(archivo_excel)
@@ -272,12 +274,21 @@ def tests_main(archivo_ruta_completa,archivo_planilla):
     plt.savefig(grafico_path)
     plt.close()
 
-    # Insertar gráfico en la hoja de Excel
+
+    # Sobrescribir la hoja existente "Resultados Tests"
     wb = openpyxl.load_workbook(archivo_planilla)
+    
+    # Si la hoja ya existe, eliminarla
     if "Resultados Tests" in wb.sheetnames:
-        ws = wb["Resultados Tests"]
-        img = openpyxl.drawing.image.Image(grafico_path)
-        ws.add_image(img, "G1")
+        del wb["Resultados Tests"]
+    
+    # Crear una nueva hoja "Resultados Tests" con los datos actualizados
+    ws = wb.create_sheet("Resultados Tests")
+    
+    # Escribir los resultados en la hoja
+    for r in dataframe_to_rows(resultados, index=False, header=True):
+        ws.append(r)
+    
     wb.save(archivo_planilla)
 
     print("Proceso completado y gráficos generados.")
