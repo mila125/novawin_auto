@@ -15,8 +15,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import subprocess
+import openpyxl
+import os
+import csv
+import traceback
+from openpyxl import load_workbook
+from pandas import ExcelWriter
+from openpyxl.drawing.image import Image
 
-def draw_comparison_bar_chart(bjhd, bjha):
+def draw_comparison_bar_chart(bjhd, bjha,archivo_planilla):
     # Filtrar las columnas necesarias para ambos dataframes
     radius_bjhd = bjhd['Radius']
     dV_logr_bjhd = bjhd['dV(logr)']
@@ -61,15 +68,45 @@ def draw_comparison_bar_chart(bjhd, bjha):
     plt.tight_layout()
     plt.show()
     
-def draw_DFT(df):
-    # Filtrar las columnas necesarias
-    half_pore_width = df['Half pore width']
+        # Guardar el gráfico como imagen
+    temp_image_path = "grafico_dft.png"
+    plt.tight_layout()
+    plt.savefig(temp_image_path, dpi=300)
+    plt.close()
+
+    # Abrir el archivo Excel y cargar la hoja "BJH"
+    if os.path.exists(archivo_planilla):
+        workbook = load_workbook(archivo_planilla)
+        if "BJH" not in workbook.sheetnames:
+            workbook.create_sheet("BJH")
+        hoja_hk = workbook["BJH"]
+
+        # Insertar la imagen en la hoja "BJH"
+        img = Image(temp_image_path)
+        img.anchor = 'G1'  # Posición inicial para insertar la imagen
+        hoja_hk.add_image(img)
+
+        # Guardar los cambios en el archivo Excel
+        workbook.save(archivo_planilla)
+        workbook.close()
+        print(f"Gráfico BJH insertado en la hoja 'BJH' del archivo '{archivo_planilla}'.")
+
+        # Eliminar la imagen temporal
+        os.remove(temp_image_path)
+def draw_DFT(df, archivo_planilla):
+    # Filtrar y convertir las columnas necesarias
+    half_pore_width = pd.to_numeric(df['Half pore width'], errors='coerce')  # Convertir a numérico
     dVr = df['dV(r)']
     
+    # Eliminar filas con valores no convertibles
+    valid_indices = ~half_pore_width.isna()
+    dVr = dVr[valid_indices]
+    half_pore_width = half_pore_width[valid_indices]
+
     # Crear el gráfico de barras
     plt.figure(figsize=(12, 6))
     bar_width = 0.8  # Aumentar el ancho de las barras
-    
+
     plt.bar(half_pore_width, dVr, width=bar_width, color='green', alpha=0.7, label='dV(r)')
     
     # Etiquetas y título
@@ -85,31 +122,80 @@ def draw_DFT(df):
     plt.tight_layout()
     plt.show()
 
-def draw_HK(df):
-    # Filtrar las columnas necesarias
-    columna_dV = df['dV()']
-    columna_half_pore_width = df['Half pore width']
-    
+    # Guardar el gráfico como imagen
+    temp_image_path = "grafico_dft.png"
+    plt.tight_layout()
+    plt.savefig(temp_image_path, dpi=300)
+    plt.close()
+
+    # Abrir el archivo Excel y cargar la hoja "DFT"
+    if os.path.exists(archivo_planilla):
+        workbook = load_workbook(archivo_planilla)
+        if "DFT" not in workbook.sheetnames:
+            workbook.create_sheet("DFT")
+        hoja_hk = workbook["DFT"]
+
+        # Insertar la imagen en la hoja "DFT"
+        img = Image(temp_image_path)
+        img.anchor = 'G1'  # Posición inicial para insertar la imagen
+        hoja_hk.add_image(img)
+
+        # Guardar los cambios en el archivo Excel
+        workbook.save(archivo_planilla)
+        workbook.close()
+        print(f"Gráfico DFT insertado en la hoja 'DFT' del archivo '{archivo_planilla}'.")
+
+        # Eliminar la imagen temporal
+        os.remove(temp_image_path)
+def draw_HK(df, archivo_planilla):
+    # Filtrar y convertir las columnas necesarias
+    dVr = df['dV()']
+    half_pore_width = pd.to_numeric(df['Half pore width'], errors='coerce')  # Convertir a numérico
+
+    # Eliminar filas con valores no convertibles
+    valid_indices = ~half_pore_width.isna()
+    dVr = dVr[valid_indices]
+    half_pore_width = half_pore_width[valid_indices]
+
     # Crear el gráfico de barras
     plt.figure(figsize=(14, 6))
-    x_positions = range(len(columna_dV))  # Posiciones en el eje x
-    plt.bar(x_positions, columna_dV, color='green', alpha=0.7, label='dV(r)')
+    bar_width = 0.8  # Ancho de las barras
+    plt.bar(half_pore_width, dVr, width=bar_width, color='green', alpha=0.7, label='dV(r)')
 
-    # Añadir etiquetas de texto en las barras
-    #for i, width in enumerate(columna_half_pore_width):
-    #    plt.text(i, columna_dV[i] + 0.05, f'{width:.2f}', ha='center', fontsize=8, color='blue')
-    
     # Etiquetas y título
     plt.xlabel('Half pore width , A')
     plt.ylabel('dV cc A g')
-    plt.title(' gráfico HK ')
-    plt.xticks(x_positions, x_positions, rotation=90)  # Mostrar las filas como índices
+    plt.title('Gráfico HK')
+    plt.xticks(half_pore_width, rotation=90)  # Etiquetas en el eje x
     plt.legend()
 
-    # Mostrar el gráfico
+    # Guardar el gráfico como imagen
+    temp_image_path = "grafico_hk.png"
     plt.tight_layout()
-    plt.show()
+    plt.savefig(temp_image_path, dpi=300)
+    plt.close()
 
+    # Abrir el archivo Excel y cargar la hoja "HK"
+    if os.path.exists(archivo_planilla):
+        workbook = load_workbook(archivo_planilla)
+        if "HK" not in workbook.sheetnames:
+            workbook.create_sheet("HK")
+        hoja_hk = workbook["HK"]
+
+        # Insertar la imagen en la hoja "HK"
+        img = Image(temp_image_path)
+        img.anchor = 'A1'  # Posición inicial para insertar la imagen
+        hoja_hk.add_image(img)
+
+        # Guardar los cambios en el archivo Excel
+        workbook.save(archivo_planilla)
+        workbook.close()
+        print(f"Gráfico HK insertado en la hoja 'HK' del archivo '{archivo_planilla}'.")
+
+        # Eliminar la imagen temporal
+        os.remove(temp_image_path)
+    else:
+        print(f"El archivo '{archivo_planilla}' no existe. No se puede insertar el gráfico.")
 def graphs_main(archivo_planilla):
     print("Inicio de graphs_main")
     print(archivo_planilla)
@@ -153,13 +239,13 @@ def graphs_main(archivo_planilla):
     
     # Leer el archivo Excel
     df = pd.read_excel(archivo_planilla, sheet_name='HK')
-    draw_HK(df)
+    draw_HK(df,archivo_planilla)
     
     # Verificar las primeras filas del archivo para asegurarse de que las columnas existen
     print(df.head())
         # Leer el archivo Excel
     df = pd.read_excel(archivo_planilla, sheet_name='DFT')
-    draw_DFT(df)
+    draw_DFT(df,archivo_planilla)
     
     # Verificar las primeras filas del archivo para asegurarse de que las columnas existen
     print(df.head())
@@ -168,7 +254,7 @@ def graphs_main(archivo_planilla):
     df_bjha = pd.read_excel(archivo_planilla, sheet_name='BJHA')
     df_bjhd = pd.read_excel(archivo_planilla, sheet_name='BJHD')
    
-    draw_comparison_bar_chart(df_bjhd, df_bjha)
+    draw_comparison_bar_chart(df_bjhd, df_bjha,archivo_planilla)
     # Verificar las primeras filas del archivo para asegurarse de que las columnas existen
     print(df.head())
     # Ejecutar un módulo específico

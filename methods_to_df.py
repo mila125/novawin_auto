@@ -616,8 +616,8 @@ def df_main(path_qps, path_csv, path_novawin,archivo_planilla):
     if not os.path.exists(archivo_planilla):
      workbook = Workbook()
      hoja = workbook.active
-     hoja.title = "Leeme"
-     hoja["A1"] = "Datos de analisis hecho en NovaWin"  # Agregar un título en la celda A1
+     file_name = os.path.basename(path_qps)
+     hoja["A2"] = "Nombre de la muestra: " + file_name  # Agregar el nombre del archivo en A2
      workbook.save(archivo_planilla)
      print(f"Archivo Excel creado en: {archivo_planilla}")
     else:
