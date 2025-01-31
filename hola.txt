@@ -1,0 +1,156 @@
+  # Dibujar segundo rectángulo sobre el primero
+   # main_width, main_height = 42, 80
+
+   # coordinates[0]=coordinates[0]+(old_width / 2) - (main_width / 2)
+   # numeros=np.append(numeros,coordinates) 
+   # coordinates = draw_rectangle(t,coordinates, main_width, main_height)
+
+    print(lados_rectangulos.size)
+    h=0
+    while(h<(lados_rectangulos.size-2)):
+     # Dibujar segundo rectángulo sobre el primero
+     main_width, main_height = lados_rectangulos[h],lados_rectangulos[h+2]
+   
+     coordinates[0]=coordinates[0]+(old_width / 2) - (main_width / 2)
+     coordinates[1]=coordinates[1]+old_heigth
+    
+     numeros=np.append(numeros,coordinates) 
+     coordinates = draw_rectangle(t,coordinates, main_width, main_height)
+     old_heigth=main_height
+     old_width=main_width
+
+     h+=2
+   # Dibujar segundo rectángulo sobre el primero
+   # main_width, main_height = 10, 50
+   
+ #   coordinates[0]=coordinates[0]+(old_width / 2) - (main_width / 2)
+  #  coordinates[1]=coordinates[1]+old_heigth
+    
+  #  numeros=np.append(numeros,coordinates) 
+  #  coordinates = draw_rectangle(t,coordinates, main_width, main_height)
+  #  old_heigth=main_height
+  #  old_width=main_width
+   
+  #  main_width, main_height = 90, 10
+  
+    total_area=main_height*main_width
+
+    i=int(total_area)
+    parsed_area=0
+    cantidad=0
+    print(numeros)
+    print(numeros_derecha)
+    while(i>=100):
+     if(total_area%i==0 and i<total_area and i>1):
+        cantidad=int(total_area/i)
+     i-=1
+    if(cantidad==0):
+        cantidad=int(total_area/10)
+    # Dibujar cuadrados en los vértices
+    parsed_area=int(total_area/cantidad)
+
+    parsed_width=int(parsed_area/4)
+
+    parsed_height=int(parsed_area/4)+(parsed_area%4)
+    
+    coordinates[0]=coordinates[0]+(old_width / 2) - (parsed_width / 2)
+
+    coordinates[1]=coordinates[1]+old_heigth
+
+    cantidad_restante=cantidad
+
+    j=1
+    signo=1
+    
+    print(numeros.size)
+    print(cantidad_restante)
+    print(parsed_width)
+    
+    coordinates[0]=int(numeros[j-1])
+     
+    coordinates[0]-=parsed_width#lado izquierdo
+     
+    coordinates[1]=int(numeros[j])
+    signo=1
+    print(j-1)
+    print((j-1)%4)
+
+    coordinates[1]-=(parsed_height)  #iteracion 1
+    print(coordinates[1]) 
+    print(coordinates[0])  
+
+    if(cantidad_restante>0):
+     coordinates = draw_rectangle(t,coordinates, parsed_width, -parsed_height)
+     cantidad_restante-=1
+    j=j+2
+    while(j<8):
+     print(numeros.size)
+     print(cantidad_restante)
+     print(parsed_width)
+    
+     coordinates[0]=int(numeros[j-1])
+     
+     coordinates[0]-=parsed_width#lado izquierdo
+     
+     coordinates[1]=int(numeros[j])
+
+     print(j-1)
+     print((j-1)%4)
+
+ 
+     coordinates[1]+=(parsed_height)  #iteracion 2
+     print(coordinates[1]) 
+     print(coordinates[0])  
+
+     if(cantidad_restante>0):
+      coordinates = draw_rectangle(t,coordinates, parsed_width, parsed_height)
+     cantidad_restante-=1
+     j=j+2
+    
+    print(cantidad_restante)
+    print(numeros.size)
+    
+    
+    
+    #coordinates[0]=int(numeros[j-1])
+     
+    #coordinates[0]-=parsed_width#lado izquierdo
+     
+    #coordinates[1]=int(numeros[j])
+    
+    #print(j-1)
+    #print((j-1)%4)
+ 
+    #coordinates[1]+=(parsed_height) #iteracion 3
+
+    #print(coordinates[1]) 
+    #print(coordinates[0])  
+
+ #   if(cantidad_restante>0):
+ #    coordinates = draw_rectangle(t,coordinates, parsed_width, parsed_height)
+ #    cantidad_restante-=1
+ #   j=j+2
+    
+#    print(numeros.size)
+#    print(cantidad_restante)
+#    print(parsed_width)
+    
+#    coordinates[0]=int(numeros[j-1])
+     
+#    coordinates[0]-=parsed_width#lado izquierdo
+     
+#    coordinates[1]=int(numeros[j])
+    
+#    print(j-1)
+#    print((j-1)%4)
+ 
+#    coordinates[1]+=(parsed_height) #iteracion 4
+
+#    print(coordinates[1]) 
+#    print(coordinates[0])  
+
+#    if(cantidad_restante>0):
+#     coordinates = draw_rectangle(t,coordinates, parsed_width, parsed_height)
+#     cantidad_restante-=1
+   
+ 
