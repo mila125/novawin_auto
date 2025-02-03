@@ -28,45 +28,34 @@ def draw_rectangle(t,coordinates, width, height,numeros_derecha):
     return(numeros_derecha)
    
 def draw_parsed_squares(t,coordinates,min_width,numeros, numeros_derecha,main_width, main_height,lados_cuadrado,numeros_cuadrado,numeros_cuadrado_derecha,distancia_hasta_el_borde):
-   
+    numeros_cuadrado= np.array([])
+    numeros_derecha_cuadrados= np.array([])
 
-    print("hola")
+    lado_cuadrado=min_width
     area_total=abs(main_width*main_height)
     print(f"Area total: {area_total}")
     i=min_width
     while (i>min_width):
-        if()
-    cantidad= int(area_total*0.5/min_width)
-    cantidad_recalculada= cantidad
-    print(cantidad)
+        if(i<distancia_hasta_el_borde):
+            i=distancia_hasta_el_borde
+            if(area_total%i**2==0):
+                lado_cuadrado=i
+        i+=1
+    print(f"Lado cuadrado : {lado_cuadrado}")
+    print(f"Area cuadrado : {lado_cuadrado**2}")
+    cantidad= int(area_total/lado_cuadrado**2)
+    print(f"Cantidad de cuadrados: {cantidad}")
     
-    cantidad=int(main_width*main_height)/(min_width*min_width)
-    print(f"Cantidad: {cantidad}")
-    modulo=int(main_width*main_height)%(min_width*min_width)
-    print(f"Modulo: {modulo}")
-    while(modulo>0):
-     
-     modulo=int(area_total%min_width)
-     cantidad_recalculada+= int(modulo/cantidad)
-     
-    parsed_width=int(min_width)
-    parsed_height=int(area_total*0.25/cantidad)
-    print(cantidad_recalculada)
-    print(f"Dimensiones de nuevo cuadrado: {parsed_width} x {parsed_height}")
-    i=0
-    j=0 #iterador para lados de rectangulo
-    print(numeros)
-    coordinates[0]=numeros[0]
-    coordinates[1]=numeros[1]
-    print(coordinates)
-    print(cantidad_recalculada)
-    print((cantidad_recalculada*2)-2)
-   
-    print(numeros_cuadrado) 
+    coordinates[0]=
+    coordinates[1]=
+    numeros_cuadrado= np.append(numeros_cuadrado, coordinates)
+    numeros_derecha_cuadrados=draw_rectangle(t,coordinates, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
+    numeros_derecha = np.append(numeros_derecha, [coordinates[0]+lado_cuadrado , coordinates[1]+lado_cuadrado])
+    return numeros_derecha
 def draw_nested_rectangles():
 
     coordinates = np.zeros(2)
-
+    modo_reducido = False
     min_width = 0
     min_heigth = 0
     numeros = np.array([])
@@ -131,14 +120,16 @@ def draw_nested_rectangles():
      if(lados_rectangulos[h-1]>main_height):
          min_heigth=main_height
          
- 
-        
-     numeros_derecha=draw_rectangle(t,coordinates, main_width, main_height,numeros_derecha)  
      distancia_hasta_el_borde = lados_rectangulos [1]-numeros_derecha[h+1]
      print(f"distancia_hasta_el_borde:{distancia_hasta_el_borde}")   
-     if(((distancia_hasta_el_borde-main_height)<0) and(h>0)):
+     if(((distancia_hasta_el_borde-lados_rectangulos [h])<0) and(h>0)):
 
-        draw_parsed_squares(t,coordinates,min_width,numeros,numeros_derecha,main_width, main_height,lados_cuadrado,numeros_cuadrado,numeros_cuadrado_derecha,distancia_hasta_el_borde)      
+        numeros_derecha=draw_parsed_squares(t,coordinates,min_width,numeros,numeros_derecha,main_width, main_height,lados_cuadrado,numeros_cuadrado,numeros_cuadrado_derecha,distancia_hasta_el_borde)     
+        modo_reducido=True
+     if(modo_reducido==False):
+      numeros_derecha=draw_rectangle(t,coordinates, main_width, main_height,numeros_derecha)  
+     modo_reducido=False
+      
      h+=2
      
      print(f"numeros_derecha[h]:{numeros_derecha[h]}")    
