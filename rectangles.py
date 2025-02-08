@@ -190,15 +190,133 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
               numeros_derecha= np.append(numeros_derecha, [coordinates[0]+lado_cuadrado , coordinates[1]+lado_cuadrado])
             
        j+=1    
-       
-
       h+=2
       i=0   
-      j=0 
+      j=0  
 
-  
-  
+    j=0#lados_rectangulos[h]
+    while(j<lados_rectangulos[h-2]): #x
+      print(f"j: {j}")  
+      if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
+             print(f"numeros_derecha[h]: {numeros_derecha[h]}")  
+             coordinates[0]-=lado_cuadrado #print(f"j: {j}")  
+             coordinates[1]=numeros_derecha[h+1]+i #-lados_rectangulos[h+1]
+           
+             numeros_cuadrado= np.append(numeros_cuadrado, coordinates)
+             numeros_derecha_cuadrados=draw_rectangle(t,coordinates, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
+             numeros_derecha= np.append(numeros_derecha, [coordinates[0]+lado_cuadrado , coordinates[1]+lado_cuadrado])
+            
+      j+=1      
+   
+    i=0
+    coordinates[0]-=lado_cuadrado
+    while i < lados_rectangulos[h - 1]:
+       print(f"i: {i}")  
+       if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
+                 
+              #coordinates[0]=numeros_derecha[h+2]-lados_rectangulos[h]+j
+              coordinates[1]-=lado_cuadrado #-lados_rectangulos[h+1]
+               
+              numeros_cuadrado = np.append(numeros_cuadrado, coordinates)
+              numeros_derecha_cuadrados = draw_rectangle(t, coordinates, lado_cuadrado, lado_cuadrado, numeros_derecha_cuadrados)  
+              numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
+        
+       i += 1
 
+    h-=2
+    i=0
+    j=0
+    while(j<lados_rectangulos[h]): #x
+      print(f"j: {j}")  
+      if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
+             print(f"numeros_derecha[h]: {numeros_derecha[h]}")  
+             coordinates[0]-=lado_cuadrado #print(f"j: {j}")  
+             coordinates[1]=numeros_derecha[h+1]+i #-lados_rectangulos[h+1]
+           
+             numeros_cuadrado= np.append(numeros_cuadrado, coordinates)
+             numeros_derecha_cuadrados=draw_rectangle(t,coordinates, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
+             numeros_derecha= np.append(numeros_derecha, [coordinates[0]+lado_cuadrado , coordinates[1]+lado_cuadrado])
+            
+      j+=1      
+   
+
+    #coordinates[0]-=lado_cuadrado
+    while i < lados_rectangulos[h - 1]:
+       print(f"i: {i}")  
+       if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
+                 
+              #coordinates[0]=numeros_derecha[h+2]-lados_rectangulos[h]+j
+              coordinates[1]-=lado_cuadrado #-lados_rectangulos[h+1]
+               
+              numeros_cuadrado = np.append(numeros_cuadrado, coordinates)
+              numeros_derecha_cuadrados = draw_rectangle(t, coordinates, lado_cuadrado, lado_cuadrado, numeros_derecha_cuadrados)  
+              numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
+        
+       i += 1
+    h-=2
+
+    i=0
+    j=0
+    while(j<lados_rectangulos[h]): #x
+      print(f"j: {j}")  
+      if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
+             print(f"numeros_derecha[h]: {numeros_derecha[h]}")  
+             coordinates[0]-=lado_cuadrado #print(f"j: {j}")  
+             coordinates[1]=numeros_derecha[h+1]+i #-lados_rectangulos[h+1]
+           
+             numeros_cuadrado= np.append(numeros_cuadrado, coordinates)
+             numeros_derecha_cuadrados=draw_rectangle(t,coordinates, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
+             numeros_derecha= np.append(numeros_derecha, [coordinates[0]+lado_cuadrado , coordinates[1]+lado_cuadrado])
+            
+      j+=1      
+   
+
+    #coordinates[0]-=lado_cuadrado
+    while i < lados_rectangulos[h - 1]:
+       print(f"i: {i}")  
+       if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
+                 
+              #coordinates[0]=numeros_derecha[h+2]-lados_rectangulos[h]+j
+              coordinates[1]-=lado_cuadrado #-lados_rectangulos[h+1]
+               
+              numeros_cuadrado = np.append(numeros_cuadrado, coordinates)
+              numeros_derecha_cuadrados = draw_rectangle(t, coordinates, lado_cuadrado, lado_cuadrado, numeros_derecha_cuadrados)  
+              numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
+        
+       i += 1
+    h-=2
+   
+
+    i=0
+    j=0
+    while(j<lados_rectangulos[h]): #x
+      print(f"j: {j}")  
+      if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
+             print(f"numeros_derecha[h]: {numeros_derecha[h]}")  
+             coordinates[0]-=lado_cuadrado #print(f"j: {j}")  
+             coordinates[1]=numeros_derecha[h+1]+i #-lados_rectangulos[h+1]
+           
+             numeros_cuadrado= np.append(numeros_cuadrado, coordinates)
+             numeros_derecha_cuadrados=draw_rectangle(t,coordinates, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
+             numeros_derecha= np.append(numeros_derecha, [coordinates[0]+lado_cuadrado , coordinates[1]+lado_cuadrado])
+            
+      j+=1      
+   
+
+    #coordinates[0]-=lado_cuadrado
+    while i < lados_rectangulos[h - 1]:
+       print(f"i: {i}")  
+       if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
+                 
+              #coordinates[0]=numeros_derecha[h+2]-lados_rectangulos[h]+j
+              coordinates[1]-=lado_cuadrado #-lados_rectangulos[h+1]
+               
+              numeros_cuadrado = np.append(numeros_cuadrado, coordinates)
+              numeros_derecha_cuadrados = draw_rectangle(t, coordinates, lado_cuadrado, lado_cuadrado, numeros_derecha_cuadrados)  
+              numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
+        
+       i += 1
+    h-=2
     return numeros_derecha
 def draw_nested_rectangles():
     distancia_hasta_el_borde=0
