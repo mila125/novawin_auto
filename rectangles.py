@@ -1,6 +1,36 @@
 import turtle
 import numpy as np
-
+def draw_square(h,i,j,i_x,i_y,j_x,j_y,lado_cuadrado,numeros_derecha,lados_rectangulos,espacio_del_cuadrado,numeros_derecha_cuadrados,numeros_cuadrado,t):
+    coordinates_i = np.zeros(2)
+    coordinates_j = np.zeros(2)
+    coordinates_i[0]=i_x
+    coordinates_i[1]=i_y#numeros_derecha[3]-100
+    coordinates_j[0]=j_x
+    coordinates_j[1]=j_y
+    while i < lados_rectangulos[h+1]:
+     print(f"i: {i}")  
+     if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
+                          
+            coordinates_i[1]+=lado_cuadrado
+            
+            numeros_cuadrado = np.append(numeros_cuadrado, coordinates_i)
+            numeros_derecha_cuadrados = draw_rectangle(t, coordinates_i, lado_cuadrado, lado_cuadrado, numeros_derecha_cuadrados)  
+            numeros_derecha = np.append(numeros_derecha, [coordinates_i[0] + lado_cuadrado, coordinates_i[1] + lado_cuadrado])
+        
+     i+=lado_cuadrado
+       
+    while(j<lados_rectangulos[h]): #x
+        print(f"j: {j}")  
+        if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
+         
+            coordinates_j[0]+=lado_cuadrado
+             
+            numeros_cuadrado= np.append(numeros_cuadrado, coordinates_j)
+            numeros_derecha_cuadrados=draw_rectangle(t,coordinates_j, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
+            numeros_derecha= np.append(numeros_derecha, [coordinates_j[0]+lado_cuadrado , coordinates_j[1]+lado_cuadrado])
+            
+        j+=lado_cuadrado    
+    return numeros_derecha        
 def draw_rectangle(t,coordinates, width, height,numeros_derecha):
 
     x=coordinates[0]
@@ -52,7 +82,8 @@ def draw_parsed_squares(t,coordinates,min_width,numeros, numeros_derecha,main_wi
 def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old):
     espacio_del_cuadrado=int(perimetro/cantidad)
     #print(f"espacio_del_cuadrado: {espacio_del_cuadrado}")
-
+    coordinates_i=coordinates
+    coordinates_j=coordinates
     i=0
     j=0
     old_width=600
@@ -85,51 +116,29 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
             
         i+=lado_cuadrado
 
-      
+    h=0  
     j=0
     i=0   
 
-  
-    while i < lados_rectangulos[1]:
-     print(f"i: {i}")  
-     if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
-               
-            #coordinates[0]=numeros_derecha[0]-(old_width/2)-(lados_rectangulos[0]/2)+j
-            #coordinates[1]=numeros_derecha[1]-old_heigth+i #-lados_rectangulos[h+1]
-            coordinates[0]=numeros_derecha[2]+j
-            coordinates[1]=numeros_derecha[h+1]+i #-lados_rectangulos[h+1]
-            numeros_cuadrado = np.append(numeros_cuadrado, coordinates)
-            numeros_derecha_cuadrados = draw_rectangle(t, coordinates, lado_cuadrado, lado_cuadrado, numeros_derecha_cuadrados)  
-            numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
-        
-     i+=lado_cuadrado
+    coordinates[0]=numeros_derecha[2]-lados_rectangulos[0]
+    coordinates[1]=numeros_derecha[3]-100#numeros_derecha[3]-lados_rectangulos[1]
      
-     while(j<lados_rectangulos[0]): #x
-        print(f"j: {j}")  
-        if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
-         
-            coordinates[0]=numeros_derecha[2]-lados_rectangulos[0]+j
-            coordinates[1]=numeros_derecha[3] 
-            
-            numeros_cuadrado= np.append(numeros_cuadrado, coordinates)
-            numeros_derecha_cuadrados=draw_rectangle(t,coordinates, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
-            numeros_derecha= np.append(numeros_derecha, [coordinates[0]+lado_cuadrado , coordinates[1]+lado_cuadrado])
-            
-        j+=lado_cuadrado         
+    numeros_derecha = draw_square(h,i,j,numeros_derecha[2]-lados_rectangulos[0],numeros_derecha[3]-lados_rectangulos[h+1],numeros_derecha[2]-lados_rectangulos[0],numeros_derecha[3],lado_cuadrado,numeros_derecha,lados_rectangulos,espacio_del_cuadrado,numeros_derecha_cuadrados,numeros_cuadrado,t)
+
 #numeros derecha incluyen el sado superior del cuadrado anfitrion
 
     h=2
     i=0   
     j=0 
+    
+    
     while h < (lados_rectangulos.size - 2):
       if numeros_derecha[1]-numeros_derecha[h+1] <= lados_rectangulos[h+1]:
-       #print(f"lados_rectangulos[h+1]: {lados_rectangulos[h+1]}")  
-       #print(f"numeros_derecha[1]-numeros_derecha[h+1]: {numeros_derecha[1]-numeros_derecha[h+1]}") 
-       #print(f"numeros_derecha[1]: {numeros_derecha[1]}") 
+
        break
-      #print(f"h: {h}")
+
       while i < lados_rectangulos[h + 1]:
-       #print(f"i: {i}")  
+
        if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
                  
               coordinates[0]=numeros_derecha[h+2]+j
@@ -140,9 +149,7 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
               numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
         
        i += 1
-      #print(f"lados_rectangulos[h]: {lados_rectangulos[h]}")
-    
-      #print(f"numeros[h]: {numeros[h]}") 
+
       while(j<lados_rectangulos[h]): #x
        #print(f"j: {j}")  
        if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
