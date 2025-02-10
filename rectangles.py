@@ -1,5 +1,17 @@
 import turtle
 import numpy as np
+def draw_diagonal_squares_rigth(t, start_x, start_y, side_length, count):
+    """Dibuja una serie de cuadrados en diagonal."""
+    for i in range(count):
+        x = start_x + (i * side_length / 2)
+        y = start_y + (i * side_length / 2)
+        draw_rectangle(t, [x, y], side_length, side_length, [])
+def draw_diagonal_squares_left(t, start_x, start_y, side_length, count):
+    """Dibuja una serie de cuadrados en diagonal."""
+    for i in range(count):
+        x = start_x + (-i * side_length / 2)
+        y = start_y + (i * side_length / 2)
+        draw_rectangle(t, [x, y], side_length, side_length, [])
 def draw_square(h,i,j,i_x,i_y,j_x,j_y,lado_cuadrado,numeros_derecha,lados_rectangulos,espacio_del_cuadrado,numeros_derecha_cuadrados,numeros_cuadrado,t):
     coordinates_i = np.zeros(2)
     coordinates_j = np.zeros(2)
@@ -165,7 +177,10 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
       h+=2
       i=0   
       j=0  
-
+    print(f"Lado top: {lados_rectangulos[h-2]}") 
+    draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
+    
+    draw_diagonal_squares_left(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
     j=0#lados_rectangulos[h]
     while(j<lados_rectangulos[h-2]): #x
       #print(f"j: {j}")  
