@@ -1,15 +1,27 @@
 import turtle
 import numpy as np
-def draw_diagonal_squares_rigth(t, start_x, start_y, side_length, count):
+def draw_diagonal_squares_left(t, start_x, start_y, side_length, count):
     """Dibuja una serie de cuadrados en diagonal."""
     for i in range(count):
         x = start_x + (i * side_length / 2)
         y = start_y + (i * side_length / 2)
         draw_rectangle(t, [x, y], side_length, side_length, [])
-def draw_diagonal_squares_left(t, start_x, start_y, side_length, count):
+def draw_diagonal_squares_rigth(t, start_x, start_y, side_length, count):
     """Dibuja una serie de cuadrados en diagonal."""
     for i in range(count):
         x = start_x + (-i * side_length / 2)
+        y = start_y + (i * side_length / 2)
+        draw_rectangle(t, [x, y], side_length, side_length, [])
+def draw_straight_branches_left(t, start_x, start_y, side_length, count):
+    """Dibuja una serie de cuadrados en diagonal."""
+    for i in range(count):
+        x = start_x
+        y = start_y + (i * side_length / 2)
+        draw_rectangle(t, [x, y], side_length, side_length, [])
+def draw_straight_branches_rigth(t, start_x, start_y, side_length, count):
+    """Dibuja una serie de cuadrados en diagonal."""
+    for i in range(count):
+        x = start_x
         y = start_y + (i * side_length / 2)
         draw_rectangle(t, [x, y], side_length, side_length, [])
 def draw_square(h,i,j,i_x,i_y,j_x,j_y,lado_cuadrado,numeros_derecha,lados_rectangulos,espacio_del_cuadrado,numeros_derecha_cuadrados,numeros_cuadrado,t):
@@ -178,9 +190,15 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
       i=0   
       j=0  
     print(f"Lado top: {lados_rectangulos[h-2]}") 
-    draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
+
+    if ((numeros_derecha[h+1] - numeros_derecha[h+3]) >= lado_cuadrado and distancia_hasta_el_borde_old == (old_heigth - numeros_derecha[h+1])):
+     draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
     
-    draw_diagonal_squares_left(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
+     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
+    else:
+      draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+    
+      draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
     j=0#lados_rectangulos[h]
     while(j<lados_rectangulos[h-2]): #x
       #print(f"j: {j}")  
@@ -209,7 +227,15 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
               numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
         
        i += 1
-
+    if (numeros_derecha[h+1] - numeros_derecha[h+3] >= lado_cuadrado and 
+    distancia_hasta_el_borde_old == old_heigth - numeros_derecha[h+1]):
+     draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
+    
+     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
+    else:
+      draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+    
+      draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
     h-=2
     i=0
     j=0
@@ -245,7 +271,15 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
                numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
         
         i += 1
-     #coordinates[0]+=lados_rectangulos[h]
+     if (numeros_derecha[h+1] - numeros_derecha[h+3] >= lado_cuadrado and 
+     distancia_hasta_el_borde_old == old_heigth - numeros_derecha[h+1]):
+    
+        draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
+     else:
+        draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+    
+        draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
+       #coordinates[0]+=lados_rectangulos[h]
      h-=2
      i=0
      j=0  
@@ -267,7 +301,19 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
               numeros_derecha = np.append(numeros_derecha, [coordinates[0] + lado_cuadrado, coordinates[1] + lado_cuadrado])
         
        i += 1
-
+   
+    if (numeros_derecha[h+1] - numeros_derecha[h+3] >= lado_cuadrado and 
+     distancia_hasta_el_borde_old == old_heigth - numeros_derecha[h+1]):
+     draw_straight_branches_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+         
+     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
+     draw_straight_branches_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
+    else:
+     draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+     draw_straight_branches_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+    
+     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
+     draw_straight_branches_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
     i=0
     j=0
     
