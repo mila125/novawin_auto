@@ -53,6 +53,7 @@ def draw_square(h,i,j,i_x,i_y,j_x,j_y,lado_cuadrado,numeros_derecha,lados_rectan
      if(direction_flag==False): 
       i-=lado_cuadrado
       if(i <= 2):
+       j=numeros_derecha[h]-numeros_derecha[h-2]
        exit_flag=True
     coordinates_j[1] = coordinates_i[1]  
     exit_flag=False
@@ -128,7 +129,10 @@ def work_with_squares(t,coordinates,min_width,numeros, numeros_derecha,rectangle
     
     draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old)
 
+    draw_diagonal_branches_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old)
     
+    draw_straight_branches_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old)
+        
 def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old):
     espacio_del_cuadrado=int(perimetro/cantidad)
     direction_flag=True 
@@ -198,15 +202,7 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
        
     print(f"Lado top: {lados_rectangulos[h-2]}")   
     h-=2
-    if ((numeros_derecha[h+1] - numeros_derecha[h+3]) >= lado_cuadrado and distancia_hasta_el_borde_old == (old_heigth - numeros_derecha[h+1])):
-     draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
     
-     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
-    else:
-      draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
-    
-      draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
-     
     j=lados_rectangulos[h]
     i=lados_rectangulos[h+1]
     coordinates[0]=numeros_derecha[h]-(lados_rectangulos[h-4]/2)-(lados_rectangulos[h]/2) 
@@ -215,23 +211,13 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
 
     draw_square(h,i,j,numeros_derecha[h+2],numeros_derecha[h+3],numeros_derecha[h+2],numeros_derecha[h+3]-lados_rectangulos[h],lado_cuadrado,numeros_derecha,lados_rectangulos,espacio_del_cuadrado,numeros_derecha_cuadrados,numeros_cuadrado,t,direction_flag)
       
-    if (numeros_derecha[h+1] - numeros_derecha[h+3] >= lado_cuadrado and 
-    distancia_hasta_el_borde_old == old_heigth - numeros_derecha[h+1]):
-     draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
-    
-     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
-    else:
-      draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
-    
-      draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
-
     h-=2
     
     coordinates[0]=numeros_derecha[h+2] 
     coordinates[1]=numeros_derecha[h+3] 
 
     
-    while(h>2): 
+    while(h>=0): 
       direction_flag=False
       j=lados_rectangulos[h]
       i=lados_rectangulos[h+1]
@@ -240,52 +226,94 @@ def draw_squares_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_der
       h-=2
     i=0
     j=0  
-
-    if (numeros_derecha[h+1] - numeros_derecha[h+3] >= lado_cuadrado and 
-     distancia_hasta_el_borde_old == old_heigth - numeros_derecha[h+1]):
-     draw_straight_branches_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
-         
-     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
-     draw_straight_branches_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
-    else:
-     draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
-     draw_straight_branches_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
-    
-     draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
-     draw_straight_branches_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
      
-    i=0
-    j=0
-    
     coordinates[0]=numeros_derecha[0]-old_width
     coordinates[1]=numeros_derecha[1] 
-    while j < old_width: #x
-      
-      if((j%espacio_del_cuadrado == 0) and (j >= espacio_del_cuadrado)):
-             #print(f"numeros_derecha[h]: {numeros_derecha[h]}")  
-              
-             coordinates[0]+=lado_cuadrado
-             
-           
-             numeros_cuadrado= np.append(numeros_cuadrado, coordinates)
-             numeros_derecha_cuadrados=draw_rectangle(t,coordinates, lado_cuadrado, lado_cuadrado,numeros_derecha_cuadrados)  
+    
+def draw_diagonal_branches_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old):
+    espacio_del_cuadrado=int(perimetro/cantidad)
+    direction_flag=True 
+    coordinates_i=coordinates
+    coordinates_j=coordinates
 
-            
-      j+=1  
-    coordinates[0]=numeros_derecha[0]-old_width
-    while i < old_heigth:
+    h=0  
+    j=0
+    i=0   
+
+    coordinates[0]=numeros_derecha[2]-lados_rectangulos[0]
+    coordinates[1]=numeros_derecha[3]-100
+     
+    direction_flag=True 
+    draw_square(h,i,j,numeros_derecha[2]-lados_rectangulos[0],numeros_derecha[3]-lados_rectangulos[1],numeros_derecha[2]-lados_rectangulos[0],numeros_derecha[3],lado_cuadrado,numeros_derecha,lados_rectangulos,espacio_del_cuadrado,numeros_derecha_cuadrados,numeros_cuadrado,t,direction_flag)
+
+    #numeros derecha incluyen el sado superior del cuadrado anfitrion
+
+    h=2
+    i=0   
+    j=0 
+    
+    while h < (lados_rectangulos.size-2 ):
+       if numeros_derecha[1]-numeros_derecha[h+1] <= lados_rectangulos[h+1]:
+
+        break
+       direction_flag=True
        
-       if (i % espacio_del_cuadrado == 0) and (i >= espacio_del_cuadrado):
-                 
-              coordinates[1]-=lado_cuadrado 
-               
-              numeros_cuadrado = np.append(numeros_cuadrado, coordinates)
-              numeros_derecha_cuadrados = draw_rectangle(t, coordinates, lado_cuadrado, lado_cuadrado, numeros_derecha_cuadrados)  
-  
-        
-       i += 1      
+       if ((numeros_derecha[h+1] - numeros_derecha[h+3]) >= lado_cuadrado and distancia_hasta_el_borde_old == (old_heigth - numeros_derecha[h+1])):
+         draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
+    
+         draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
+       else:
+         draw_diagonal_squares_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+    
+         draw_diagonal_squares_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
+       h+=2
+       i=0   
+       j=0  
+       coordinates[0]=numeros_derecha[h]-(lados_rectangulos[h-4]/2)-(lados_rectangulos[h]/2) 
+       coordinates[1]=numeros_derecha[h+1] 
 
-  
+def draw_straight_branches_around_the_fig(perimetro,cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old):
+    espacio_del_cuadrado=int(perimetro/cantidad)
+    direction_flag=True 
+    coordinates_i=coordinates
+    coordinates_j=coordinates
+
+    h=0  
+    j=0
+    i=0   
+
+    coordinates[0]=numeros_derecha[2]-lados_rectangulos[0]
+    coordinates[1]=numeros_derecha[3]-100
+     
+    direction_flag=True 
+    draw_square(h,i,j,numeros_derecha[2]-lados_rectangulos[0],numeros_derecha[3]-lados_rectangulos[1],numeros_derecha[2]-lados_rectangulos[0],numeros_derecha[3],lado_cuadrado,numeros_derecha,lados_rectangulos,espacio_del_cuadrado,numeros_derecha_cuadrados,numeros_cuadrado,t,direction_flag)
+
+    #numeros derecha incluyen el sado superior del cuadrado anfitrion
+
+    h=2
+    i=0   
+    j=0 
+    
+    while h < (lados_rectangulos.size-2 ):
+       if numeros_derecha[1]-numeros_derecha[h+1] <= lados_rectangulos[h+1]:
+
+        break
+       direction_flag=True
+       
+       if ((numeros_derecha[h+1] - numeros_derecha[h+3]) >= lado_cuadrado and distancia_hasta_el_borde_old == (old_heigth - numeros_derecha[h+1])):
+         draw_straight_branches_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lado_cuadrado, 10)
+    
+         draw_straight_branches_left(t, numeros_derecha[h], numeros_derecha[h+1], lado_cuadrado, 10)
+       else:
+         draw_straight_branches_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)
+    
+         draw_straight_branches_left(t, numeros_derecha[h], numeros_derecha[h+1]-lado_cuadrado, lado_cuadrado, 10)  
+       h+=2
+       i=0   
+       j=0  
+       coordinates[0]=numeros_derecha[h]-(lados_rectangulos[h-4]/2)-(lados_rectangulos[h]/2) 
+       coordinates[1]=numeros_derecha[h+1] 
+       
 def draw_nested_rectangles():
     distancia_hasta_el_borde=0
     distancia_hasta_el_borde_old=0
@@ -330,16 +358,13 @@ def draw_nested_rectangles():
     numeros_derecha=draw_rectangle(t,coordinates, main_width, main_height,numeros_derecha)
     
 
-    #old_heigth=main_height
-    #old_width=main_width
 
     perimetro+=(2*main_width)+(2*main_height)
 
-    #main_width = lados_rectangulos[0]
-    #main_height = lados_rectangulos[1]
+
     
     coordinates[0]=coordinates[0]+(main_width/2)-(lados_rectangulos[0]/2)
-    #coordinates[1]=coordinates[1]+lados_rectangulos[1]-old_heigth
+
     
     print(f"coordinates: {coordinates}")  
     h=0
@@ -357,7 +382,7 @@ def draw_nested_rectangles():
      if(((distancia_hasta_el_borde-lados_rectangulos [h])<0) and(h>0)):
         print(f"lados_rectangulos[h]: {lados_rectangulos[h]}") 
         print(f"lados_rectangulos[h+1]: {lados_rectangulos[h+1]}") 
-        #work_with_squares(t,coordinates,min_width,numeros,numeros_derecha,main_width,main_height,lados_cuadrado,numeros_cuadrado,numeros_cuadrado_derecha,distancia_hasta_el_borde,old_width,old_heigth,h,lados_rectangulos,perimetro,distancia_hasta_el_borde_old)
+       
         work_with_squares(t,coordinates,min_width,numeros,numeros_derecha,lados_rectangulos[h],lados_rectangulos[h+1],lados_cuadrado,numeros_cuadrado,numeros_cuadrado_derecha,distancia_hasta_el_borde,main_width,main_height,h-2,lados_rectangulos,perimetro,distancia_hasta_el_borde_old)     
         modo_reducido=True
      if(modo_reducido==False):
