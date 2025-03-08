@@ -64,39 +64,77 @@ def draw_straight_branches_rigth(t, start_x, start_y, side_length, count,main_wi
         y = start_y + (i * side_length / 2)
         draw_rectangle(t, [x, y], side_length, side_length, [])
 def draw_diagonal_branches_left(t, start_x, start_y, side_length, count,main_width,main_height):
-    global perimetro
-    lado_cuadrado=10
-    """Dibuja una serie de cuadrados en diagonal."""
-    for i in range(int(count)):
-        if(start_x >= (numeros_derecha[0]-main_width)):
-            return count
-        x = start_x-i
-        y = start_y + (i * side_length / 2)
-        coordinates[0]=x
-        coordinates[0]=y
-        if(i%side_length==0 and i>=side_length):
-            perimetro+=lado_cuadrado*2
-        draw_rectangle(t, lado_cuadrado, lado_cuadrado)#, []
-        count-=1
-    perimetro+=side_length #mejor
+    #print(f"draw_diagonal_branches_left: t : {t}") 
+    #print(f"draw_diagonal_branches_left: start_x : {start_x}") 
+    #print(f"draw_diagonal_branches_left: start_y : {start_y}") 
+    #print(f"draw_diagonal_branches_left: side_length : {side_length}") 
+    #print(f"draw_diagonal_branches_left: count : {count}") 
+    #print(f"draw_diagonal_branches_left: main_width : {main_width}") 
+    #print(f"draw_diagonal_branches_left: main_height : {main_height}") 
+    #global perimetro
+    #lado_cuadrado=10
+    #"""Dibuja una serie de cuadrados en diagonal."""
+    #for i in range(int(count)):
+    #    if(start_x <= (numeros_derecha[0]-main_width)):
+    #        print("hola")
+    #        return count
+    #    x = start_x-i
+    #    y = start_y + (i * side_length / 2)
+    #    coordinates[0]=x
+    #    coordinates[1]=y
+    #    if(i%side_length==0 and i>=side_length):
+    #        perimetro+=lado_cuadrado*2
+    #    draw_rectangle(t, lado_cuadrado, lado_cuadrado)#, []
+    #    count-=1
+    #perimetro+=side_length #mejor
+    #print("Rama izquierda finalizada") 
     return count
     
 def draw_diagonal_branches_rigth(t, start_x, start_y, side_length, count,main_width,main_height):
+    
     global perimetro
     lado_cuadrado=10
     """Dibuja una serie de cuadrados en diagonal."""
-    for i in range(int(count)):
-        if(start_x >= (numeros_derecha[0])):
-            return count
-        x = start_x+i
-        y = start_y + (i * side_length / 2)
-        coordinates[0]=x
-        coordinates[0]=y
-        if(i%side_length==0 and i>=side_length):
-            perimetro+=lado_cuadrado*2
-        draw_rectangle(t,lado_cuadrado, lado_cuadrado)#, []
-        count-=1
+    width=int(side_length/lado_cuadrado)
+
+    heigth=int(count-(2*width))/2
+
+    x = start_x
+    y = start_y
+    for i in range(int(heigth)):
+        for j in range(int(width)):
+         if((x*lado_cuadrado) >= (numeros_derecha[0])):
+             return count
+         x+=1
+         coordinates[0]=x
+        
+         coordinates[1]=y
+         
+         draw_rectangle(t,lado_cuadrado, lado_cuadrado)#, []
+         count-=1
+         x = coordinates[0]
+         y = coordinates[1]
+         
+         y -= lado_cuadrado
+
+         j += 1
+        j=0
+        x=start_x+(i*lado_cuadrado)
+        
+        x+=1
+        
+        i+=lado_cuadrado  
+        y+=lado_cuadrado
+        
+        perimetro+=lado_cuadrado*2
+        
+        print(f"j: {j}") 
+        print(f"x: {x}") 
+        print(f"i: {i}") 
+        print(f"y: {y}")      
+   
     perimetro+=side_length #mejor
+    print("Rama derecha finalizada") 
     return count
 def draw_rectangle(t, width, height):
     
@@ -144,10 +182,11 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
   
        cantidad= int(area_total/lado_cuadrado**2)
        print(f"cantidad: {cantidad}")
-       rama_derecha=draw_diagonal_branches_rigth(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1], lados_rectangulos[h-2]/2, cantidad/2,old_width,old_heigth)
+       print(f"Perimetro ahora: {perimetro}")
+       rama_derecha=draw_diagonal_branches_rigth(t, numeros_derecha[h]+lados_rectangulos[h-2]+lado_cuadrado, numeros_derecha[h+1], lados_rectangulos[h-2]/2, cantidad/2,old_width,old_heigth)
        print(f"Perimetro ahora: {perimetro}") 
        rama_izquierda=draw_diagonal_branches_left(t, numeros_derecha[h]-lados_rectangulos[h-2], numeros_derecha[h+1],lados_rectangulos[h-2]/2, cantidad/2,old_width,old_heigth)
-       print(f"Perimetro ahora: {perimetro}") 
+       print(f"Perimetro ahora1: {perimetro}") 
        ramas_diagonales = np.append(rama_izquierda, rama_derecha) 
        if(rama_izquierda >= 0 or rama_derecha >= 0):
            h-=2
