@@ -56,11 +56,12 @@ def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_heigh
     coordinates[0]=numeros_derecha[0]-(main_width/2)-(lados_rectangulos[h]/2)
    print(f"coordinates[1] en draw_same_squares_rectangle: {coordinates[1]}") 
    numeros_derecha = np.append(numeros_derecha, coordinates)  
-   
-def draw_straight_branches_left(t, start_x, start_y, side_length, count):
-    global numeros_ramas_derecha
+
+def draw_straight_branches_left(t, start_x, start_y, side_length, count, main_width, main_height):
     global rigth_j_max
     global perimetro
+    global lados_ramas
+    global numeros_ramas_derecha
     lado_cuadrado = 10
     """Dibuja una serie de cuadrados en diagonal hacia la izquierda."""
     width = int(side_length / lado_cuadrado)
@@ -79,8 +80,8 @@ def draw_straight_branches_left(t, start_x, start_y, side_length, count):
     
             if(int(x) <= int(numeros_derecha[0]-main_width)):
              print("salgo") 
-             lados_x_ramas = np.append(lados_x_ramas, side_length)
-             numeros_ramas_derecha = np.append(numeros_ramas_derecha, coordinates[0], coordinates[1])
+             lados_ramas = np.append(lados_ramas, side_length)
+             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
              diagonal_flag=False
              return count
             #if(int(x*lado_cuadrado) <= -int(main_width*lado_cuadrado)):
@@ -117,6 +118,8 @@ def draw_straight_branches_left(t, start_x, start_y, side_length, count):
 def draw_straight_branches_rigth(t, start_x, start_y, side_length, count,main_width,main_height):
     global rigth_j_max
     global perimetro
+    global lados_ramas
+    global numeros_ramas_derecha
     lado_cuadrado=10
     """Dibuja una serie de cuadrados en diagonal."""
     width=int(side_length/lado_cuadrado)
@@ -136,8 +139,8 @@ def draw_straight_branches_rigth(t, start_x, start_y, side_length, count,main_wi
          print(f"main_width*lado_cuadrado: {main_width*lado_cuadrado}") 
          if(int(numeros_derecha[0])+int(x*lado_cuadrado) >= int(numeros_derecha[0])-int(main_width)):
              print("salgo") 
-             lados_x_ramas = np.append(lados_x_ramas, side_length)
-             numeros_ramas_derecha = np.append(numeros_ramas_derecha, coordinates[0], coordinates[1])
+             lados_ramas = np.append(lados_ramas, side_length)
+             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
              diagonal_flag=False
              return count
          x+=1
@@ -172,10 +175,13 @@ def draw_straight_branches_rigth(t, start_x, start_y, side_length, count,main_wi
     perimetro+=side_length #mejor
     print("Rama derecha finalizada") 
     return count
+    
 def draw_diagonal_branches_left(t, start_x, start_y, side_length, count, main_width, main_height):
+    global numeros_ramas_derecha
     global diagonal_flag
     global rigth_j_max
     global perimetro
+    global lados_ramas
     lado_cuadrado = 10
     """Dibuja una serie de cuadrados en diagonal hacia la izquierda."""
     width = int(side_length / lado_cuadrado)
@@ -194,8 +200,8 @@ def draw_diagonal_branches_left(t, start_x, start_y, side_length, count, main_wi
     
             if(int(x) <= int(numeros_derecha[0]-main_width)):
              print("salgo") 
-             lados_x_ramas = np.append(lados_x_ramas, side_length)
-             numeros_ramas_derecha = np.append(numeros_ramas_derecha, coordinates[0], coordinates[1])
+             lados_ramas = np.append(lados_ramas, side_length)
+             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
              diagonal_flag=True
              return count
             #if(int(x*lado_cuadrado) <= -int(main_width*lado_cuadrado)):
@@ -233,6 +239,8 @@ def draw_diagonal_branches_rigth(t, start_x, start_y, side_length, count,main_wi
     global rigth_j_max
     global perimetro
     global diagonal_flag
+    global lados_ramas
+    global numeros_ramas_derecha
     lado_cuadrado=10
     """Dibuja una serie de cuadrados en diagonal."""
     width=int(side_length/lado_cuadrado)
@@ -252,8 +260,8 @@ def draw_diagonal_branches_rigth(t, start_x, start_y, side_length, count,main_wi
          print(f"main_width*lado_cuadrado: {main_width*lado_cuadrado}") 
          if(int(numeros_derecha[0])+int(x*lado_cuadrado) >= int(numeros_derecha[0])-int(main_width)):
              print("salgo") 
-             lados_x_ramas = np.append(lados_x_ramas, side_length)
-             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates[0], coordinates[1])
+             lados_ramas = np.append(lados_ramas, side_length)
+             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
              diagonal_flag=True
              return count
          x+=1
@@ -330,49 +338,52 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
     area_total=abs(rectangle_width*rectangle_height)
 
     if(rectangle_height > distancia_hasta_el_borde_y or rectangle_width > 600) :
-      # print("El rectangulo no cabe en el espacio restante") 
+     
        count= int(area_total/lado_cuadrado**2)
-      #cantidad= int(area_total/lado_cuadrado**2)
-      # print(f"cantidad: {cantidad}")
-      # print(f"Perimetro ahora: {perimetro}")
-      # rama_derecha=draw_diagonal_branches_rigth(t, numeros_derecha[h]+lados_rectangulos[h-2]+lado_cuadrado, numeros_derecha[h+1], lados_rectangulos[h-2]/2, cantidad/2,old_width,old_heigth)
-      # print(f"Perimetro ahora: {perimetro}") 
-      # rama_izquierda=draw_diagonal_branches_left(t, numeros_derecha[h], numeros_derecha[h+1],lados_rectangulos[h-2]/2, cantidad/2,old_width,old_heigth)
-       
-      # ramas_diagonales = np.append(rama_izquierda, rama_derecha)
-       #print(f"int(numeros_derecha[h-1]: {int(numeros_derecha[h-1])}") 
-
-       #print(f"h ahora: {h}") 
-       #print(f"Longitud de numeros_derecha: {len(numeros_derecha)}")
-       #print(f"numeros_derecha ahora: {numeros_derecha}") 
-       #numeros_ramas_derecha  =  np.append(numeros_ramas_derecha,int(numeros_derecha[h-2]),int(numeros_derecha[h-1]) )
-       #print(f"h ahora: {h}") 
-       #print(f"Longitud de numeros_derecha: {len(numeros_derecha)}")
-       #print(f"numeros_derecha ahora: {numeros_derecha}") 
-       #numeros_ramas_derecha  =  np.append(numeros_ramas_derecha,int(numeros_derecha[h]), int(numeros_derecha[h+1])) 
-       #print(f"h ahora: {h}") 
-       #print(f"Longitud de numeros_derecha: {len(numeros_derecha)}")
-       #print(f"numeros_derecha ahora: {numeros_derecha}") 
-       
-       # Agregar los últimos 4 elementos de numeros_derecha
-       lados_ramas = np.append(lados_ramas, 20)
+    
+       lados_ramas = np.append(lados_ramas, 30)
        lados_ramas = np.append(lados_ramas, int(((distancia_hasta_el_borde_x**2)+(distancia_hasta_el_borde_y**2))**0.5))
-       lados_ramas = np.append(lados_ramas, 0)
+
        print(f"lados_ramas: {lados_ramas}") 
        numeros_ramas_derecha = np.append(numeros_ramas_derecha, numeros_derecha[-2:]-distancia_hasta_el_borde_x-lados_rectangulos[-2:])
        numeros_ramas_derecha = np.append(numeros_ramas_derecha, numeros_derecha[-1:]+distancia_hasta_el_borde_y)#rama_izquierda
        numeros_ramas_derecha = np.append(numeros_ramas_derecha, numeros_derecha[-2:]+distancia_hasta_el_borde_x)
        numeros_ramas_derecha = np.append(numeros_ramas_derecha, numeros_derecha[-1:]+distancia_hasta_el_borde_y)#rama_derecha
-      
+       numeros_ramas_derecha = np.append(numeros_ramas_derecha,0)
+       numeros_ramas_derecha = np.append(numeros_ramas_derecha,0)#rama_derecha
        nivel_ramas = 0
+
        while(count>= 0):
-            rama_izquierda=draw_diagonal_branches_left(t, numeros_ramas_derecha[nivel_ramas]+lados_ramas[nivel_ramas], numeros_ramas_derecha[nivel_ramas+1],lados_ramas[nivel_ramas], count/2,old_width,old_heigth)
-            rama_derecha=draw_diagonal_branches_rigth(t, numeros_ramas_derecha[nivel_ramas]-lados_ramas[nivel_ramas], numeros_ramas_derecha[nivel_ramas+1],lados_ramas[nivel_ramas], count/2,old_width,old_heigth)
-            
-            nivel_ramas+=4
-            rama_derecha-=draw_straight_branches_rigth(t, numeros_ramas_derecha[nivel_ramas+2]-lados_ramas[nivel_ramas], numeros_ramas_derecha[nivel_ramas+3], lados_ramas[nivel_ramas+2], count/2,old_width,old_heigth)
-            rama_izquierda-=draw_straight_branches_left(t, numeros_ramas_derecha[nivel_ramas+2]+lados_ramas[nivel_ramas+2], numeros_ramas_derecha[nivel_ramas+3],lados_ramas[nivel_ramas+2], count/2,old_width,old_heigth)
-            count = rama_derecha + rama_izquierda
+            print("count:", count)
+            print("numeros_ramas_derecha:", numeros_ramas_derecha)
+            print("lados_ramas:", lados_ramas)
+            print("nivel_ramas:", nivel_ramas)
+            print("Índices que intentas acceder:", nivel_ramas+2, nivel_ramas+3)
+
+            if(count>0):
+              rama_derecha=count/2
+              rama_izquierda=rama_derecha
+              lados_ramas = np.append(lados_ramas, 30)
+              lados_ramas = np.append(lados_ramas, int(((distancia_hasta_el_borde_x**2)+(distancia_hasta_el_borde_y**2))**0.5))
+              rama_izquierda=draw_diagonal_branches_left(t, numeros_ramas_derecha[nivel_ramas]+lados_ramas[nivel_ramas], numeros_ramas_derecha[nivel_ramas+1],lados_ramas[nivel_ramas], count/2,old_width,old_heigth)
+              numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
+              
+              rama_derecha=draw_diagonal_branches_rigth(t, numeros_ramas_derecha[nivel_ramas]-lados_ramas[nivel_ramas], numeros_ramas_derecha[nivel_ramas+1],lados_ramas[nivel_ramas], count/2,old_width,old_heigth)
+              
+              numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
+              count = rama_derecha + rama_izquierda
+              nivel_ramas+=3
+
+        
+              if(count>0):
+                rama_derecha=count/2
+                rama_izquierda=rama_derecha
+                lados_ramas = np.append(lados_ramas, 30)
+                lados_ramas = np.append(lados_ramas, int(((distancia_hasta_el_borde_x**2)+(distancia_hasta_el_borde_y**2))**0.5))
+                rama_derecha=draw_straight_branches_rigth(t, numeros_ramas_derecha[nivel_ramas+2]-lados_ramas[nivel_ramas], numeros_ramas_derecha[nivel_ramas+3], lados_ramas[nivel_ramas+2], count/2,old_width,old_heigth)
+                rama_izquierda=draw_straight_branches_left(t, numeros_ramas_derecha[nivel_ramas+2]+lados_ramas[nivel_ramas+2], numeros_ramas_derecha[nivel_ramas+3],lados_ramas[nivel_ramas+2], count/2,old_width,old_heigth)
+           
+                count = rama_derecha + rama_izquierda
             print(f"Perimetro ahora1: {perimetro}") 
     else:
         print("El rectangulo cabe en el espacio restante") 
