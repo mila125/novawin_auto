@@ -18,7 +18,7 @@ perimetro=0
 rigth_j_max=0
 numeros_ramas_derecha=  np.array([])
 MAX_DEPTH=0
-def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_height): 
+def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_height,pose): 
    global numeros_ramas_derecha
    global perimetro
    global numeros_derecha   
@@ -28,7 +28,7 @@ def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_heigh
    espacio_del_cuadrado=int(perimetro/cantidad)
    print(f"espacio_del_cuadrado: {espacio_del_cuadrado}") 
    print(f"Perimetro ahora: {perimetro}") 
-   #direction_flag=True 
+
    print(f"H: {h}")
    print(f"lados_rectangulos: {lados_rectangulos}")
    print(f"lados_rectangulos[h+1]: {lados_rectangulos[h+1]}")
@@ -36,7 +36,7 @@ def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_heigh
    j=0
    i=0   
   
-   coordinates[0]=numeros_derecha[0]-(main_width/2)-(lados_rectangulos[h]/2)
+   coordinates[0]=pose-(lados_rectangulos[h]/2)
    
    print(f"lados_rectangulos[h]: {lados_rectangulos[h]}") 
    print(f"coordinates[0]: {coordinates[0]}") 
@@ -54,199 +54,11 @@ def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_heigh
         j+=lado_cuadrado
     coordinates[1]+=lado_cuadrado 
     i+=lado_cuadrado    
-    coordinates[0]=numeros_derecha[0]-(main_width/2)-(lados_rectangulos[h]/2)
+    coordinates[0]=pose-(lados_rectangulos[h]/2)
    print(f"coordinates[1] en draw_same_squares_rectangle: {coordinates[1]}") 
    numeros_derecha = np.append(numeros_derecha, coordinates)  
 
-def draw_straight_branches(t, start_x, start_y, side_length, count,main_width,main_height):
-    global rigth_j_max
-    global perimetro
-    global lados_ramas
-    global numeros_ramas_derecha
-    lado_cuadrado=10
-    """Dibuja una serie de cuadrados en diagonal."""
-    width=int(side_length/lado_cuadrado)
 
-    heigth=int(count-(2*width))/2
-    
-
-    print(f"width : {width}") 
-    print(f"heigth: {heigth}") 
-    print(f"numeros_derecha[0]: {numeros_derecha[0]}") 
-    x = start_x
-    y = start_y
-    for i in range(int(heigth)):
-
-        for j in range(int(width)):
-            
-         print(f"main_width*lado_cuadrado: {main_width*lado_cuadrado}") 
-         if(int(numeros_derecha[0])+int(x*lado_cuadrado) >= int(numeros_derecha[0])-int(main_width)):
-             print("salgo") 
-             lados_ramas = np.append(lados_ramas, side_length)
-             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
-             diagonal_flag=False
-             return count
-         x+=1
-         coordinates[0]=x
-        
-         coordinates[1]=y
-         
-         draw_rectangle(t,lado_cuadrado, lado_cuadrado)#, []
-         count-=1
-         x = coordinates[0]
-         y = coordinates[1]
-         
-         y -= lado_cuadrado
-
-         j += 1
-         rigth_j_max=j
-        j=0
-        x=start_x+(i*lado_cuadrado)
-        
-        x+=1
-        
-        i+=lado_cuadrado  
-        y+=lado_cuadrado
-        
-        perimetro+=lado_cuadrado*2
-        
-        print(f"j: {j}") 
-        print(f"x: {x}") 
-        print(f"i: {i}") 
-        print(f"y: {y}")      
-   
-    perimetro+=side_length #mejor
-    print("Rama derecha finalizada") 
-    return count
-    
-def draw_diagonal_branches_left(t, start_x, start_y, side_length, count, main_width, main_height):
-    global numeros_ramas_derecha
-    global diagonal_flag
-    global rigth_j_max
-    global perimetro
-    global lados_ramas
-    global saved_x
-    global saved_y
-    lado_cuadrado = 10
-    """Dibuja una serie de cuadrados en diagonal hacia la izquierda."""
-    width = int(side_length / lado_cuadrado)
-    heigth = int((count - (2 * width)) / 2)
-    print(f"width : {width}") 
-    print(f"heigth: {heigth}") 
-    print(f"numeros_derecha[0]: {numeros_derecha[0]}") 
-    x = start_x
-    y = start_y
-
-    for i in range(int(heigth)):
-       
-        for j in range(int(width), 0, -1):  # Ahora j se mueve en orden inverso
-            print(f"int(x): {int(x)}") 
-            print(f"int(numeros_derecha[0])-int(main_width): {int(numeros_derecha[0])-int(main_width)}")              
-    
-            if(int(x) <= int(numeros_derecha[0]-main_width)):
-             print("salgo") 
-             lados_ramas = np.append(lados_ramas, side_length)
-             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
-             diagonal_flag=True
-             return count
-            #if(int(x*lado_cuadrado) <= -int(main_width*lado_cuadrado)):
-             #print("salgo") 
-             #return count
-            x -= 1  # Se invierte la dirección de x
-            coordinates[0] = x
-            coordinates[1] = y
-            if(i==height/2):
-                saved_x=coordinates[0]
-                saved_y=coordinates[1]
-            draw_rectangle(t, lado_cuadrado, lado_cuadrado)
-            count -= 1
-            x = coordinates[0]
-            y = coordinates[1]
-
-            y -= lado_cuadrado  # Mantiene la dirección de y
-
-        j = 0
-        x = start_x - (i * lado_cuadrado)  # Cambio en la dirección de x
-        x -= 1  # Se invierte el ajuste de x
-
-        i += lado_cuadrado  
-        y += lado_cuadrado  # Ajuste normal de y
-
-        perimetro += lado_cuadrado * 2
-        
-        print(f"left j: {j}") 
-        print(f"left x: {x}") 
-        print(f"left i: {i}") 
-        print(f"left y: {y}")      
-
-    perimetro += side_length  
-    print("Rama izquierda finalizada") 
-    return count
-def draw_diagonal_branches_rigth(t, start_x, start_y, side_length, count,main_width,main_height):
-    global rigth_j_max
-    global perimetro
-    global diagonal_flag
-    global lados_ramas
-    global numeros_ramas_derecha
-    global saved_x
-    global saved_y
-    lado_cuadrado=10
-    """Dibuja una serie de cuadrados en diagonal."""
-    width=int(side_length/lado_cuadrado)
-
-    heigth=int(count-(2*width))/2
-    
-
-    print(f"width : {width}") 
-    print(f"heigth: {heigth}") 
-    print(f"numeros_derecha[0]: {numeros_derecha[0]}") 
-    x = start_x
-    y = start_y
-    for i in range(int(heigth)):
-
-        for j in range(int(width)):
-            
-         print(f"main_width*lado_cuadrado: {main_width*lado_cuadrado}") 
-         if(int(numeros_derecha[0])+int(x*lado_cuadrado) >= int(numeros_derecha[0])-int(main_width)):
-             print("salgo") 
-             lados_ramas = np.append(lados_ramas, side_length)
-             numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
-             diagonal_flag=True
-             return count
-         x+=1
-         coordinates[0]=x
-         coordinates[1]=y
-         if(i==height/2):
-            saved_x=coordinates[0]
-            saved_y=coordinates[1]
-         
-         draw_rectangle(t,lado_cuadrado, lado_cuadrado)#, []
-         count-=1
-         x = coordinates[0]
-         y = coordinates[1]
-         
-         y -= lado_cuadrado
-
-         j += 1
-         rigth_j_max=j
-        j=0
-        x=start_x+(i*lado_cuadrado)
-        
-        x+=1
-        
-        i+=lado_cuadrado  
-        y+=lado_cuadrado
-        
-        perimetro+=lado_cuadrado*2
-        
-        print(f"j: {j}") 
-        print(f"x: {x}") 
-        print(f"i: {i}") 
-        print(f"y: {y}")      
-   
-    perimetro+=side_length #mejor
-    print("Rama derecha finalizada") 
-    return count
 def draw_rectangle(t, width, height):
     
     global numeros_derecha
@@ -275,33 +87,35 @@ def draw_rectangle(t, width, height):
     coordinates[1]+=height
     #numeros_derecha = np.append(numeros_derecha, [coordinates[0]+width , coordinates[1]+height])
 def hoja(t, profundidad, rama_height,rama_width, count,rama_count,h):
-    if(count>0):
+    global lados_rectangulos
 
-     if profundidad > MAX_DEPTH:
-         return count  # ✅ Retornamos count correctamente
-     global lados_rectangulos
-     t.pendown()
-     longitud = rama_height  
-     draw_same_squares_rectangle(rama_count,10,t,h,600,600)
-     lados_rectangulos = np.append(lados_rectangulos, rama_width) 
-     lados_rectangulos = np.append(lados_rectangulos, rama_height) 
-    # t.forward(longitud)
-     count -= count/3
-     t.left(60)
-    if(count>0):
-      count = hoja(t, profundidad + 1, rama_height,rama_width, count,rama_count,h)  # ✅ Guardamos el valor retornado
-      t.right(120)
-      if(count>0):
-       count = hoja(t, profundidad + 1, rama_height,rama_width, count,rama_count,h)  # ✅ Guardamos el valor retornado
-       t.right(120)
-     #(cantidad,lado_cuadrado,t,h,main_width,main_height)
-       draw_same_squares_rectangle(rama_count,10,t,h,600,600)
-   # t.forward(longitud)
-    #count -= longitud
-       count -= rama_count
-       t.left(180)
+    #t.penup()
+    print(f"count1: {count}")
+    if(count==0):
+        return
+    else:
+     
     
-       return count  # ✅ Devolver el valor actualizado de count
+     
+     lados_rectangulos = np.append(lados_rectangulos, 20) 
+     lados_rectangulos = np.append(lados_rectangulos, 50)
+     coordinates[0]=numeros_derecha[0]
+     
+     
+     print(f"sigue: {count}")
+     draw_same_squares_rectangle(rama_count,10,t,h,600,600,-(600/2)-lados_rectangulos[h-2]/2)
+
+     coordinates[0]=numeros_derecha[0]
+     coordinates[1]=numeros_derecha[1]
+     count -= rama_count
+
+    
+     draw_same_squares_rectangle(rama_count,10,t,h,600,600,(-600/2)+(lados_rectangulos[h-2]/2)+20)
+     count -= rama_count
+
+     coordinates[0]=numeros_derecha[0]-(600/2)
+     coordinates[1]=numeros_derecha[1]-lados_rectangulos[h+1]
+     return 
 
 
 def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_borde_x,distancia_hasta_el_borde_y,old_width,old_heigth,h,distancia_hasta_el_borde_oldl):
@@ -311,6 +125,7 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
     global numeros_cuadrado
     global numeros_derecha_cuadrados
     global lados_ramas 
+    global lados_rectangulos
     lado_cuadrado = 10    
     print(f"lado_cuadrado: {lado_cuadrado}") 
     print(f"rectangle_width: {rectangle_width}") 
@@ -320,28 +135,32 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
     count= int(area_total/lado_cuadrado**2)
     
     if(rectangle_height > distancia_hasta_el_borde_y or rectangle_width > 600) :
+       print("h:", h)
+       print("lados_rectangulos[h]:", lados_rectangulos[h])
        if(lados_rectangulos[h]>0):
         print("El rectangulo no cabe en el espacio restante")  
        
         print("count:", count)
        
         rama_height=int(lados_rectangulos[-1]/3)#int(((distancia_hasta_el_borde_x**2)+(distancia_hasta_el_borde_y**2))**0.5)
-       
+        
+      
         rama_width=int(lados_rectangulos[-2]/3)
         print(f"lados_ramas: {lados_ramas}") 
        
         nivel_ramas = 0
         global MAX_DEPTH
         MAX_DEPTH = 1
-        coordinates[0]=numeros_derecha[-2]-lados_rectangulos[-2]/2
+        coordinates[0]=numeros_derecha[-2]-lados_rectangulos[h]#/2
         coordinates[1]=numeros_derecha[-1]
-        numeros_ramas_derecha = np.append(numeros_ramas_derecha,coordinates)
-        rama_count=count/3
-        while(count>= 10):
-           count=hoja(t,0,rama_height,rama_width,count,rama_count,h)
-           print(f"Perimetro ahora1: {perimetro}")
+        numeros_derecha = np.append(numeros_ramas_derecha,coordinates)
+        
+        rama_count=int(count/2)
+        print("rama_count:", rama_count)
+        hoja(t,0,rama_height,rama_width,count,rama_count,h)
+        print(f"Perimetro ahora1: {perimetro}")
           
-    else:
+    if(rectangle_height <= distancia_hasta_el_borde_y and rectangle_width < 600) :
        if(lados_rectangulos[h]>0):  
          print("El rectangulo cabe en el espacio restante") 
          new_heigth=rectangle_height
@@ -357,7 +176,7 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
          print(f"count: {count}")
          print(f"coordinates[1] en work_with_squares: {coordinates[1]}") 
          if(count>0):
-          draw_same_squares_rectangle(count,lado_cuadrado,t,h,old_width,old_heigth)
+          draw_same_squares_rectangle(count,lado_cuadrado,t,h,old_width,old_heigth,numeros_derecha[0]-(600/2))
 
         
 def draw_squares_around_the_fig(cantidad,lados_rectangulos,numeros_derecha,lado_cuadrado,coordinates,numeros_cuadrado,t,numeros_derecha_cuadrados,numeros,distancia_hasta_el_borde_old):
@@ -520,16 +339,13 @@ def draw_nested_rectangles():
     
     while(h<(lados_rectangulos.size-2)):
      # Dibujar segundo rectángulo sobre el primero
-    ## numeros_derecha = np.append(numeros_derecha, [coordinates[0]+lados_rectangulos[h] , coordinates[1]+lados_rectangulos[h+1]])
+
      print(f"h: {h}")      
      print(f"lados_rectangulos[h]: {lados_rectangulos[h]}") 
      print(f"lados_rectangulos[h+1]: {lados_rectangulos[h+1]}") 
-     
-     print(f"numeros_derecha[h+2]: {numeros_derecha[h+2]}") 
-     print(f"numeros_derecha[h+3]: {numeros_derecha[h+3]}") 
-     #numeros_derecha = np.append(numeros_derecha, [coordinates[0]+lados_rectangulos[h] , coordinates[1]+lados_rectangulos[h+1]]) 
-     distancia_hasta_el_borde_y = (numeros_derecha[1])-numeros_derecha[h+3]
-     distancia_hasta_el_borde_x = (main_width/2) #lados_rectangulos [0]
+      
+     distancia_hasta_el_borde_y = abs(numeros_derecha[1]-coordinates[1])
+     distancia_hasta_el_borde_x = (main_width/2) 
     
      print(f"distancia_hasta_el_borde_y : {distancia_hasta_el_borde_y }") 
      print(f"distancia_hasta_el_borde_x: {distancia_hasta_el_borde_x}")
@@ -537,8 +353,6 @@ def draw_nested_rectangles():
 
      work_with_squares(t,lados_rectangulos[h],lados_rectangulos[h+1],distancia_hasta_el_borde_x,distancia_hasta_el_borde_y,main_width,main_height,h,distancia_hasta_el_borde_old)     
                   
-   
-     #distancia_hasta_el_borde_old = distancia_hasta_el_borde
   
      h+=2
      coordinates[0]=lados_rectangulos[h-2]-(lados_rectangulos[h-2]/2)-(lados_rectangulos[h]/2) #coordinates[0]=numeros_derecha[h]-(lados_rectangulos[h-2]/2)-(main_width/2)
@@ -546,7 +360,6 @@ def draw_nested_rectangles():
      print(f"coordinates[1] en nested rectangles: {coordinates[1]}")
      print(f"coordinates[1]: {coordinates[1]}")
      numeros_derecha = np.append(numeros_derecha, coordinates) 
-    #numeros=np.append(numeros,coordinates)
 
     # Finalizar
     window.update()
