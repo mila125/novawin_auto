@@ -5,6 +5,7 @@ from methods_to_df import df_main
 from graphs import graphs_main
 from datetime import datetime
 from tests import tests_main
+from rectangles import draw_nested_rectangles
 from tkinter import ttk
 import pandas as pd
 from tkinter import *
@@ -13,7 +14,16 @@ import os
 
 # Archivo de configuración
 config_file = "config.ini"
+def ejecutar_modulo_rectangles(funcion):
 
+      
+    ventana.quit()
+    ventana.destroy()
+    funcion(ruta_excel)
+      
+       
+
+# Función para ejecutar el módulo de tests
 def ejecutar_modulo_rangos_dft_main(funcion):
 
         try:
@@ -230,11 +240,12 @@ Button(ventana, text="Dibujar", command=lambda: ejecutar_modulo_grafico(graphs_m
 
 Button(ventana, text="Hacer los tests de presencia de  los 3 tipos de poros (BET)", command=lambda: ejecutar_modulo_tests(tests_main)).grid(row=20, column=0, pady=5)
 
-#Button(ventana, text="Clasificar los poros (DFT)", command=lambda: ejecutar_modulo_rangos_dft_main(rangos_dft_main)).grid(row=12, column=1, pady=10)
 
 boton_clsaificar_poros_dft = Button(ventana, text="Clasificar los poros (DFT)", command=lambda: ejecutar_modulo_rangos_dft_main(rangos_dft_main))
 boton_clsaificar_poros_dft.grid(row=22, column=0, pady=5)
 
+boton_dibujar_arbol = Button(ventana, text="Dibujar arbol", command=lambda: ejecutar_modulo_rectangles(rectangles))
+boton_dibujar_arbol.grid(row=24, column=0, pady=5)
 # Cargar configuración inicial
 cargar_configuracion()
 
