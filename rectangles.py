@@ -12,35 +12,46 @@ numeros_cuadrado_derecha = np.array([])
 numeros_cuadrado= np.array([])
 numeros_derecha_cuadrados= np.array([])
 lados_ramas = np.array([])
-sequencia = np.array([])
+secuencia = np.array([])
 diagonal_flag=False
 perimetro=0
 rigth_j_max=0
 numeros_ramas_derecha=  np.array([])
 MAX_DEPTH=0
 fibonacci_dual = []  # Array global para almacenar la secuencia combinada
+def fibonacci_hasta_maximo(max_valor):
+    """
+    Genera una secuencia de Fibonacci hasta que el valor máximo sea alcanzado o superado.
+    
+    :param max_valor: El valor máximo que no debe superar la secuencia.
+    :return: Lista con la secuencia de Fibonacci hasta el límite.
+    """
+    if max_valor <= 0:
+        return [0]
+
+    seq = [0, 1]
+    while True:
+        nuevo_valor = seq[-1] + seq[-2]
+        if nuevo_valor > max_valor:  # Detenemos cuando el siguiente valor supera el límite
+            break
+        seq.append(nuevo_valor)
+
+    return seq
+
+
 def fibonacci_dual(max_x, max_y):
     """
-    Genera dos secuencias de Fibonacci dentro de un mismo array.
+    Genera dos secuencias de Fibonacci dentro de un mismo array, limitadas por max_x y max_y.
     - Elementos en índices pares corresponden a la distancia en X.
     - Elementos en índices impares corresponden a la distancia en Y.
 
-    :param max_x: Número máximo de términos en la secuencia X.
-    :param max_y: Número máximo de términos en la secuencia Y.
+    :param max_x: Valor máximo que la secuencia de X no debe superar.
+    :param max_y: Valor máximo que la secuencia de Y no debe superar.
     :return: Lista con ambas secuencias intercaladas.
     """
-    def fibonacci(n):
-        """Genera la secuencia de Fibonacci hasta n términos."""
-        if n <= 0:
-            return []
-        fib = [0, 1]
-        for _ in range(2, n):
-            fib.append(fib[-1] + fib[-2])
-        return fib[:n]
-
-        # Obtener ambas secuencias
-    seq_x = fibonacci(int(max_x))  # Convertimos max_x a entero
-    seq_y = fibonacci(int(max_y))  # Convertimos max_y a entero
+    # Obtener las secuencias limitadas por el valor máximo
+    seq_x = fibonacci_hasta_maximo(max_x)
+    seq_y = fibonacci_hasta_maximo(max_y)
 
     # Intercalar ambas secuencias en un solo array
     resultado = []
@@ -124,22 +135,25 @@ def draw_rectangle(t, width, height):
     coordinates[1]+=height
     #numeros_derecha = np.append(numeros_derecha, [coordinates[0]+width , coordinates[1]+height])
     
-def ramas(t,  count, h, distancia_hasta_el_borde_y,pose_x,i):
+def ramas(t,h, distancia_hasta_el_borde_y,pose_x,i,cantidad_de_ramas):
+    
     global lados_rectangulos
     print(f"lados_rectangulos: {lados_rectangulos}")
-    global sequencia
-    print(f"sequencia: {sequencia}")
+    global secuencia
+    print(f"i: {i}")
+    print(f"secuencia: {secuencia}")
+   
+    rama_height=secuencia[i-1]
+    rama_width=secuencia[i-2]
+   
+
+    count=int((rama_height*rama_width)/100)
     
-    
-    rama_height=fibonacci_array[i+1]
-    rama_width=fibonacci_array[i]
-    print(f"ramas: count: {count}")
-    rama_count=int((rama_width*rama_height)/10)
-    print(f"rama_count: {rama_count}")
-    count=count-rama_count
     print(f"count restante: {count}")
+  
+    
     # 🛑 Condición de salida para evitar recursión infinita
-    if count <= 1 or rama_height < 5 or rama_width < 5 or i>sizeof(fibonacci_array):
+    if count <= 1 or rama_height < 5 or rama_width < 5 or i>len(secuencia):
         return
 
     # Agregar dimensiones de la rama al arreglo global
@@ -150,23 +164,28 @@ def ramas(t,  count, h, distancia_hasta_el_borde_y,pose_x,i):
     coordinates[1] = numeros_derecha[1] - distancia_hasta_el_borde_y
 
     print(f"sigue: {count}")
-
+    
     # Dibujar la primera rama (izquierda)
     
-   
+    print(f"cantidad_de_ramas: {cantidad_de_ramas}")
+    
     draw_same_squares_rectangle(int(count)/2, 10, t, h, 600, 600,pose_x - lados_rectangulos[h - 2] / 2 )
-
+    cantidad_de_ramas-=1
+    if(cantidad_de_ramas)==0:
+        cantidad_de_ramas=int(count//((lados_rectangulos[h]*lados_rectangulos[h])/100))
+        i-=2
+    fr
     # Llamada recursiva para la primera rama
-    ramas(t, rama_height * 0.5, rama_width * 0.5, count // 2, h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i-2)
+    ramas(t,h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i,cantidad_de_ramas)
 
     coordinates[0] = numeros_derecha[0]
     coordinates[1] = numeros_derecha[1] - distancia_hasta_el_borde_y
 
     # Dibujar la segunda rama (derecha)
     draw_same_squares_rectangle(int(count)/2, 10, t, h - 2, 600, 600, pose_x + lados_rectangulos[h - 2] / 2)
-
+    cantidad_de_ramas-=1
     # Llamada recursiva para la segunda rama
-    ramas(t, rama_height * 0.5, rama_width * 0.5, count // 2, h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i-2)
+    ramas(t, h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i,cantidad_de_ramas)
 def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_borde_x,distancia_hasta_el_borde_y,old_width,old_heigth,h,distancia_hasta_el_borde_oldl):
     global perimetro
     global numeros_ramas_derecha
@@ -175,7 +194,7 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
     global numeros_derecha_cuadrados
     global lados_ramas 
     global lados_rectangulos
-    global sequencia
+    global secuencia
     lado_cuadrado = 10    
     print(f"lado_cuadrado: {lado_cuadrado}") 
     print(f"rectangle_width: {rectangle_width}") 
@@ -192,27 +211,29 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
        
         print("count:", count)
        
-        rama_height=abs(int(lados_rectangulos[h+1]/2))#int(((distancia_hasta_el_borde_x**2)+(distancia_hasta_el_borde_y**2))**0.5)
+        #rama_height=abs(int(lados_rectangulos[h+1]/2))#int(((distancia_hasta_el_borde_x**2)+(distancia_hasta_el_borde_y**2))**0.5)
         
       
-        rama_width=abs(int(lados_rectangulos[h]/2))
-        print(f"lados_ramas: {lados_ramas}") 
+        #rama_width=abs(int(lados_rectangulos[h]/2))
+        #print(f"lados_ramas: {lados_ramas}") 
        
         nivel_ramas = 0
-        global MAX_DEPTH
-        MAX_DEPTH = 1
+
         coordinates[0]=numeros_derecha[-2]-lados_rectangulos[h]#/2
         coordinates[1]=numeros_derecha[-1]
         numeros_derecha = np.append(numeros_derecha,coordinates)
-        secuencia = fibonacci_dual(distancia_hasta_el_borde_x, distancia_hasta_el_borde_y)
+        secuencia = fibonacci_dual(int(distancia_hasta_el_borde_x), int(distancia_hasta_el_borde_y))
+        
         print("Secuencia generada:", secuencia)
+        print("distancia_hasta_el_borde_y:", distancia_hasta_el_borde_y)
+        print("distancia_hasta_el_borde_x:", distancia_hasta_el_borde_x)
         print("Longitud de la secuencia:", len(secuencia))  # Usamos len() en la lista resultante
-        rama_width=sequencia[-2]
-        rama_height=sequencia[-3]
-        rama_count=int(count)
-        print("rama_count:", rama_count)
+
+     
         pose_x= -(600 / 2) 
-        ramas(t,int(rama_height),int(rama_width),rama_count,h,distancia_hasta_el_borde_y,pose_x,len(secuencia))
+        cantidad_de_ramas=int(((secuencia[-1]*secuencia[-2])/100)/((lados_rectangulos[h]*lados_rectangulos[h+1])/100))
+        ramas(t,h,distancia_hasta_el_borde_y,pose_x,len(secuencia),cantidad_de_ramas)
+
         coordinates[0]=(numeros_derecha[0]/2)-(lados_rectangulos[h]/2)
         coordinates[1]=numeros_derecha[h]-distancia_hasta_el_borde_y
         print(f"Perimetro ahora1: {perimetro}")
