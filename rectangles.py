@@ -135,57 +135,69 @@ def draw_rectangle(t, width, height):
     coordinates[1]+=height
     #numeros_derecha = np.append(numeros_derecha, [coordinates[0]+width , coordinates[1]+height])
     
-def ramas(t,h, distancia_hasta_el_borde_y,pose_x,i,cantidad_de_ramas):
-    
+def ramas(t,h, distancia_hasta_el_borde_y,pose_x,i,cantidad_de_ramas,count):
+    #ramas(t,h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i,cantidad_de_ramas)    
     global lados_rectangulos
     print(f"lados_rectangulos: {lados_rectangulos}")
     global secuencia
     print(f"i: {i}")
     print(f"secuencia: {secuencia}")
    
-    rama_height=secuencia[i-1]
-    rama_width=secuencia[i-2]
-   
+    rama_height=int(secuencia[i-1]/2)
+    rama_width=int(secuencia[i-2]/2)
 
-    count=int((rama_height*rama_width)/100)
+    print(f"rama_height: {rama_height}")
+    print(f"rama_width: {rama_width}")
+    
+    print(f"int((rama_height*rama_width)/100): {int(rama_height*rama_width/100)}")
+    count-=int(rama_height*rama_width/100)
     
     print(f"count restante: {count}")
   
-    
+    print(f"h: {h}")
     # 🛑 Condición de salida para evitar recursión infinita
-    if count <= 1 or rama_height < 5 or rama_width < 5 or i>len(secuencia):
+    if  i<=0:
         return
 
-    # Agregar dimensiones de la rama al arreglo global
-    lados_rectangulos = np.append(lados_rectangulos, rama_width)
-    lados_rectangulos = np.append(lados_rectangulos, rama_height)
+
 
     coordinates[0] = numeros_derecha[0]
     coordinates[1] = numeros_derecha[1] - distancia_hasta_el_borde_y
 
     print(f"sigue: {count}")
     
-    # Dibujar la primera rama (izquierda)
     
-    print(f"cantidad_de_ramas: {cantidad_de_ramas}")
+    # Agregar dimensiones de la rama al arreglo global
+    lados_rectangulos = np.append(lados_rectangulos, rama_width)
+    lados_rectangulos = np.append(lados_rectangulos, rama_height)
+    #Dibujar la primera rama (izquierda)
+    draw_same_squares_rectangle(rama_height*rama_width, 10, t, h, 600, 600,pose_x - lados_rectangulos[h - 2] / 2 )
     
-    draw_same_squares_rectangle(int(count)/2, 10, t, h, 600, 600,pose_x - lados_rectangulos[h - 2] / 2 )
     cantidad_de_ramas-=1
-    if(cantidad_de_ramas)==0:
-        cantidad_de_ramas=int(count//((lados_rectangulos[h]*lados_rectangulos[h])/100))
-        i-=2
-    fr
-    # Llamada recursiva para la primera rama
-    ramas(t,h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i,cantidad_de_ramas)
+
+   
+   
 
     coordinates[0] = numeros_derecha[0]
     coordinates[1] = numeros_derecha[1] - distancia_hasta_el_borde_y
+    
+    # Agregar dimensiones de la rama al arreglo global
+    lados_rectangulos = np.append(lados_rectangulos, rama_width)
+    lados_rectangulos = np.append(lados_rectangulos, rama_height)
 
+    count-=int(rama_height*rama_width/100)
+    
+    print(f"count restante: {count}")
     # Dibujar la segunda rama (derecha)
-    draw_same_squares_rectangle(int(count)/2, 10, t, h - 2, 600, 600, pose_x + lados_rectangulos[h - 2] / 2)
+    draw_same_squares_rectangle(rama_height*rama_width, 10, t, h - 2, 600, 600, pose_x + lados_rectangulos[h - 2] / 2)
     cantidad_de_ramas-=1
+    # Llamada recursiva para la primera rama
+
+    i-=2
+    ramas(t,h + 2, distancia_hasta_el_borde_y,pose_x - (lados_rectangulos[h - 2] / 2)- (lados_rectangulos[h] / 2),i,cantidad_de_ramas,count)
+   
     # Llamada recursiva para la segunda rama
-    ramas(t, h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i,cantidad_de_ramas)
+    #ramas(t, h + 2, distancia_hasta_el_borde_y,pose_x - lados_rectangulos[h - 2] / 2- lados_rectangulos[h] / 2,i,cantidad_de_ramas)
 def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_borde_x,distancia_hasta_el_borde_y,old_width,old_heigth,h,distancia_hasta_el_borde_oldl):
     global perimetro
     global numeros_ramas_derecha
@@ -208,21 +220,13 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
        print("lados_rectangulos[h]:", lados_rectangulos[h])
        if(lados_rectangulos[h]>0):
         print("El rectangulo no cabe en el espacio restante")  
-       
+        count= int(lados_rectangulos[h]*lados_rectangulos[h+1]/100)
         print("count:", count)
        
-        #rama_height=abs(int(lados_rectangulos[h+1]/2))#int(((distancia_hasta_el_borde_x**2)+(distancia_hasta_el_borde_y**2))**0.5)
-        
-      
-        #rama_width=abs(int(lados_rectangulos[h]/2))
-        #print(f"lados_ramas: {lados_ramas}") 
-       
-        nivel_ramas = 0
-
         coordinates[0]=numeros_derecha[-2]-lados_rectangulos[h]#/2
         coordinates[1]=numeros_derecha[-1]
         numeros_derecha = np.append(numeros_derecha,coordinates)
-        secuencia = fibonacci_dual(int(distancia_hasta_el_borde_x), int(distancia_hasta_el_borde_y))
+        secuencia = fibonacci_dual(int(rectangle_width), int(distancia_hasta_el_borde_y))
         
         print("Secuencia generada:", secuencia)
         print("distancia_hasta_el_borde_y:", distancia_hasta_el_borde_y)
@@ -232,7 +236,13 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
      
         pose_x= -(600 / 2) 
         cantidad_de_ramas=int(((secuencia[-1]*secuencia[-2])/100)/((lados_rectangulos[h]*lados_rectangulos[h+1])/100))
-        ramas(t,h,distancia_hasta_el_borde_y,pose_x,len(secuencia),cantidad_de_ramas)
+        saved_h = h
+        h=len(lados_rectangulos)
+        # Agregar dimensiones de la primera rama al arreglo global
+        lados_rectangulos = np.append(lados_rectangulos, lados_rectangulos[saved_h])
+        lados_rectangulos = np.append(lados_rectangulos,  lados_rectangulos[saved_h+1])
+        ramas(t,h,distancia_hasta_el_borde_y,pose_x,len(secuencia),cantidad_de_ramas,count)
+        h = saved_h
 
         coordinates[0]=(numeros_derecha[0]/2)-(lados_rectangulos[h]/2)
         coordinates[1]=numeros_derecha[h]-distancia_hasta_el_borde_y
