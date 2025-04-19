@@ -21,6 +21,7 @@ MAX_DEPTH=0
 fibonacci_dual = []  # Array global para almacenar la secuencia combinada
 color_palet = np.array([])
 k = 0
+okidoki="nothing"
 def fibonacci_hasta_maximo(max_valor):
     """
     Genera una secuencia de Fibonacci hasta que el valor máximo sea alcanzado o superado.
@@ -75,7 +76,7 @@ def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_heigh
    global coordinates
    global lados_rectangulos 
    global lados_ramas
- 
+   global okidoki
    if((perimetro<10000) and (cantidad > 0) and (cantidad < 10000) and (cantidad > 0)):
     espacio_del_cuadrado=int(perimetro/cantidad)
    #print(f"espacio_del_cuadrado: {espacio_del_cuadrado}") 
@@ -90,8 +91,14 @@ def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_heigh
   
     coordinates[0]=pose-(lados_rectangulos[h]/2)
    
-    
-
+    print(f"coordinates[0] {coordinates[0]} numeros[0]={numeros[0]}")
+    print(f"coordinates[1] {coordinates[1]} numeros[1]={numeros[1]}")
+    #if(overlap=="overlap"):
+        
+    if(okidoki=="okidoki"):
+      coordinates[1]=numeros_derecha[1]-lados_rectangulos[h+1]
+      print(f"b")
+      okidoki=="nothing"
    #print("dibuja") 
     while i<lados_rectangulos[h+1]: #y
      
@@ -151,7 +158,7 @@ def draw_rectangle(t, width, height):
     # numeros_derecha = np.append(numeros_derecha, [coordinates[0]+width , coordinates[1]+height])
 def ramas(t, h, distancia_hasta_el_borde_y, pose_x, i, cantidad_de_ramas, count, nivel):
     global lados_rectangulos, secuencia, coordinates, numeros_derecha
-
+    global okidoki
     if i <= 0 or count <= 0 or nivel > 5:
         return
 
@@ -159,6 +166,9 @@ def ramas(t, h, distancia_hasta_el_borde_y, pose_x, i, cantidad_de_ramas, count,
 
     rama_height = int(secuencia[i - 1] / 2)
     rama_width = int(secuencia[i - 2] / 2)
+ 
+
+     
     consumo = int((rama_height * rama_width) / 100)
 
     if count < consumo:
@@ -171,7 +181,12 @@ def ramas(t, h, distancia_hasta_el_borde_y, pose_x, i, cantidad_de_ramas, count,
 
     lados_rectangulos = np.append(lados_rectangulos, rama_width)
     lados_rectangulos = np.append(lados_rectangulos, rama_height)
-
+    if ((coordinates[1])  > -300):
+     okidoki="okidoki"
+    
+     print(f"a")
+    else:
+      okidoki="nothing"
     draw_same_squares_rectangle(rama_height * rama_width, 10, t, h, 600, 600,
                                 pose_x - lados_rectangulos[h - 2] / 2)
     cantidad_de_ramas -= 1
@@ -419,10 +434,12 @@ def draw_nested_rectangles():
     numeros=np.append(numeros,coordinates)
    #print(f"numeros_derecha: {numeros_derecha}")    
     draw_rectangle(t, main_width, main_height)
+    
     k+=1
    #print(f"k: {k}") 
     numeros_derecha = np.append(numeros_derecha, [coordinates[0] , coordinates[1]])
-
+    print(f"coordinates[0] {coordinates[0]} numeros_derecha[0]={numeros_derecha[0]}")
+    print(f"coordinates[1] {coordinates[1]} numeros_derecha[1]={numeros_derecha[1]}")
    #print(f"numeros_derecha: {numeros_derecha}") 
 
     perimetro+=(2*main_width)+(2*main_height)
