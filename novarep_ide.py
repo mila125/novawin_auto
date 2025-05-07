@@ -236,16 +236,18 @@ boton_xlsx.grid(row=14, column=1, pady=5)
 label_estado = Label(ventana, text="", fg="blue", font=("Arial", 10))
 label_estado.grid(row=16, column=1, pady=5)
 
-Button(ventana, text="Dibujar", command=lambda: ejecutar_modulo_grafico(graphs_main)).grid(row=18, column=0, pady=5)
+Button(ventana, text="Visualizar histograma", command=lambda: ejecutar_modulo_grafico(graphs_main)).grid(row=18, column=0, pady=5)
 
 Button(ventana, text="Hacer los tests de presencia de  los 3 tipos de poros (BET)", command=lambda: ejecutar_modulo_tests(tests_main)).grid(row=20, column=0, pady=5)
-
 
 boton_clsaificar_poros_dft = Button(ventana, text="Clasificar los poros (DFT)", command=lambda: ejecutar_modulo_rangos_dft_main(rangos_dft_main))
 boton_clsaificar_poros_dft.grid(row=22, column=0, pady=5)
 
-boton_dibujar_arbol = Button(ventana, text="Dibujar arbol", command=lambda: ejecutar_modulo_rectangles(rectangles))
+boton_dibujar_arbol = Button(ventana, text="Visualizar arbol", command=lambda: ejecutar_modulo_rectangles(rectangles))
 boton_dibujar_arbol.grid(row=24, column=0, pady=5)
+
+boton_dibujar_poros = Button(ventana, text="Visualizar poros", command=lambda: ejecutar_modulo_rectangles(rectangles))
+boton_dibujar_poros.grid(row=26, column=0, pady=5)
 # Cargar configuración inicial
 cargar_configuracion()
 

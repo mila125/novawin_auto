@@ -22,6 +22,7 @@ fibonacci_dual = []  # Array global para almacenar la secuencia combinada
 color_palet = np.array([])
 k = 0
 okidoki="nothing"
+occupied_positions = {}  # Un diccionario global para saber qué lugares están ocupados
 def fibonacci_hasta_maximo(max_valor):
     """
     Genera una secuencia de Fibonacci hasta que el valor máximo sea alcanzado o superado.
@@ -69,54 +70,74 @@ def fibonacci_dual(max_x, max_y):
             j += 1
 
     return resultado
-def draw_same_squares_rectangle(cantidad,lado_cuadrado,t,h,main_width,main_height,pose): 
-   global numeros_ramas_derecha
-   global perimetro
-   global numeros_derecha   
-   global coordinates
-   global lados_rectangulos 
-   global lados_ramas
-   global okidoki
-   if((perimetro<10000) and (cantidad > 0) and (cantidad < 10000) and (cantidad > 0)):
-    espacio_del_cuadrado=int(perimetro/cantidad)
-   #print(f"espacio_del_cuadrado: {espacio_del_cuadrado}") 
-   #print(f"Perimetro ahora: {perimetro}") 
- 
-   #print(f"H: {h}")
-   #print(f"lados_rectangulos: {lados_rectangulos}")
-   #print(f"lados_rectangulos[h+1]: {lados_rectangulos[h+1]}")
-   #print(f"lados_rectangulos[h]: {lados_rectangulos[h]}")
-    j=0
-    i=0   
-  
-    coordinates[0]=pose-(lados_rectangulos[h]/2)
-   
-    print(f"coordinates[0] {coordinates[0]} numeros[0]={numeros[0]}")
-    print(f"coordinates[1] {coordinates[1]} numeros[1]={numeros[1]}")
-    #if(overlap=="overlap"):
-        
-    if(okidoki=="okidoki"):
-      coordinates[1]=numeros_derecha[1]-lados_rectangulos[h+1]
-      print(f"b")
-      okidoki=="nothing"
-   #print("dibuja") 
-    while i<lados_rectangulos[h+1]: #y
-     
-    #print(f"i: {i}")  
-     j=0            
-     while j<lados_rectangulos[h]: #x 
-        #print(f"j: {j}") 
+def draw_same_squares_rectangle(cantidad, lado_cuadrado, t, h, main_width, main_height, pose):
+    global numeros_ramas_derecha
+    global perimetro
+    global numeros_derecha
+    global coordinates
+    global lados_rectangulos
+    global lados_ramas
+    global okidoki
+    global occupied_positions  # Asegúrate de tener esto declarado globalmente e inicializado como {}
 
-         draw_rectangle(t, lado_cuadrado, lado_cuadrado)
-         coordinates[0]+=1
-         coordinates[1]-=lado_cuadrado #draw rectangle agrega el alto del cuadrado a la coordenada por defecto ajusto esto
-         j+=lado_cuadrado
-     coordinates[1]+=lado_cuadrado 
-     i+=lado_cuadrado    
-     coordinates[0]=pose-(lados_rectangulos[h]/2)
-    
-   #print(f"coordinates[1] en draw_same_squares_rectangle: {coordinates[1]}") 
-    numeros_derecha = np.append(numeros_derecha, coordinates)  
+    if not (0 < cantidad < 10000 and perimetro < 10000):
+        return
+
+    espacio_del_cuadrado = int(perimetro / cantidad)
+    i = 0  # vertical (y)
+    j = 0  # horizontal (x)
+
+    coordinates[0] =  - (lados_rectangulos[h+2] / 2)
+
+    if okidoki == "okidoki":
+        coordinates[1] = numeros_derecha[1] - lados_rectangulos[h + 1]
+        okidoki = "nothing"
+
+    def is_free(x, y):
+        key = (int(x) // 10, int(y) // 10)
+        return not occupied_positions.get(key, False)
+
+    while i < lados_rectangulos[h + 1]:
+        j = 0
+        x = coordinates[0]
+        y = coordinates[1]
+
+        while j < lados_rectangulos[h]:
+            max_attempts = 50
+            attempts = 0
+            success = False
+
+            tx = x  # copia temporal de x para intentar encontrar lugar libre
+
+            while attempts < max_attempts:
+                if is_free(tx, y):
+                    success = True
+                    break
+                tx -= 10
+                attempts += 1
+
+            if not success:
+                print("No se encontró espacio libre para este cuadrado.")
+                j += lado_cuadrado
+                continue
+
+            coordinates[0] = tx
+            coordinates[1] = y
+
+            draw_rectangle(t, lado_cuadrado, lado_cuadrado)
+
+            # Marcar la celda como ocupada
+            key = (int(tx) // 10, int(y) // 10)
+            occupied_positions[key] = True
+
+            coordinates[0] += lado_cuadrado
+            j += lado_cuadrado
+
+        i += lado_cuadrado
+
+        coordinates[0] =  - (lados_rectangulos[h+2] / 2)
+    #coordinates[1] =+(lados_rectangulos[h+3])
+    numeros_derecha = np.append(numeros_derecha, coordinates)
 def draw_diagonal_branch(t, width, height, angle):
     t.setheading(angle)
     t.begin_fill()
@@ -141,7 +162,9 @@ def draw_rectangle(t, width, height):
     t.pencolor("gray")         # Color del contorno (plomo)
 
     t.fillcolor(color_palet[k])     # Color de relleno (celeste)
-    
+    # Marcar ocupado antes de avanzar
+    key = (int(t.xcor())//10, int(t.ycor())//10)
+    occupied_positions[key] = True
     t.begin_fill()
     # Dibujar y rellenar el rectángulo
     for _ in range(2):
@@ -156,19 +179,21 @@ def draw_rectangle(t, width, height):
     coordinates[0] += width
     coordinates[1] += height
     # numeros_derecha = np.append(numeros_derecha, [coordinates[0]+width , coordinates[1]+height])
+
+LIMIT_X_MIN = -300
+LIMIT_X_MAX = 300
+LIMIT_Y_MIN = -300
+LIMIT_Y_MAX = 300
+
 def ramas(t, h, distancia_hasta_el_borde_y, pose_x, i, cantidad_de_ramas, count, nivel):
     global lados_rectangulos, secuencia, coordinates, numeros_derecha
     global okidoki
-    if i <= 0 or count <= 0 or nivel > 5:
-        return
 
-    #print(f"[Nivel {nivel}] i={i}, count={count}, h={h}")
+    if i <= 1 or count <= 0 or nivel > 5:
+        return
 
     rama_height = int(secuencia[i - 1] / 2)
     rama_width = int(secuencia[i - 2] / 2)
- 
-
-     
     consumo = int((rama_height * rama_width) / 100)
 
     if count < consumo:
@@ -176,40 +201,46 @@ def ramas(t, h, distancia_hasta_el_borde_y, pose_x, i, cantidad_de_ramas, count,
 
     count -= consumo
 
-    coordinates[0] = numeros_derecha[0]
-    coordinates[1] = numeros_derecha[1] - distancia_hasta_el_borde_y
+    base_x = pose_x
+    base_y = numeros_derecha[1] - distancia_hasta_el_borde_y
+
+    # Evitar dibujar fuera de los límites
+    if not (LIMIT_X_MIN <= base_x <= LIMIT_X_MAX and LIMIT_Y_MIN <= base_y <= LIMIT_Y_MAX):
+        return
 
     lados_rectangulos = np.append(lados_rectangulos, rama_width)
     lados_rectangulos = np.append(lados_rectangulos, rama_height)
-    if ((coordinates[1])  > -300):
-     okidoki="okidoki"
-    
-     print(f"a")
-    else:
-      okidoki="nothing"
-    draw_same_squares_rectangle(rama_height * rama_width, 10, t, h, 600, 600,
-                                pose_x - lados_rectangulos[h - 2] / 2)
-    cantidad_de_ramas -= 1
 
-    # Derecha
-    lados_rectangulos = np.append(lados_rectangulos, rama_width)
-    lados_rectangulos = np.append(lados_rectangulos, rama_height)
+    okidoki = "okidoki" if base_y > -300 else "nothing"
 
-    count -= consumo
-    draw_same_squares_rectangle(rama_height * rama_width, 10, t, h - 2, 600, 600,
-                                pose_x + lados_rectangulos[h - 2] / 2)
-    cantidad_de_ramas -= 1
+    # Dibuja solo si está dentro de los límites
+    if cantidad_de_ramas > 0:
+        draw_same_squares_rectangle(rama_height * rama_width, 10, t, h, 600, 600, base_x)
+        cantidad_de_ramas -= 1
+
+    if cantidad_de_ramas > 0 and base_x + rama_width / 2 <= LIMIT_X_MAX:
+        draw_same_squares_rectangle(rama_height * rama_width, 10, t, h, 600, 600, base_x + rama_width / 2)
+        cantidad_de_ramas -= 1
+
+    if cantidad_de_ramas > 0:
+        draw_same_squares_rectangle(rama_height * rama_width, 10, t, h, 600, 600, base_x)
+        cantidad_de_ramas -= 1
+
+    if cantidad_de_ramas > 0 and base_x - rama_width / 2 >= LIMIT_X_MIN:
+        draw_same_squares_rectangle(rama_height * rama_width, 10, t, h, 600, 600, base_x - rama_width / 2)
+        cantidad_de_ramas -= 1
 
     i -= 2
 
-    # Recursión izquierda y derecha
-    ramas(t, h + 2, distancia_hasta_el_borde_y,
-          pose_x - (lados_rectangulos[h - 2] / 2) - (lados_rectangulos[h] / 2), i, cantidad_de_ramas, count, nivel + 1)
-
-    ramas(t, h + 2, distancia_hasta_el_borde_y,
-          pose_x + (lados_rectangulos[h - 2] / 2) + (lados_rectangulos[h] / 2), i, cantidad_de_ramas, count, nivel + 1)
-
-
+    # Recursión segura solo si los nuevos puntos están dentro de los límites
+    if base_y + rama_height <= LIMIT_Y_MAX:
+        ramas(t, h + 2, distancia_hasta_el_borde_y + rama_height, pose_x, i, cantidad_de_ramas, count, nivel + 1)
+    if base_y - rama_height >= LIMIT_Y_MIN:
+        ramas(t, h + 2, distancia_hasta_el_borde_y - rama_height, pose_x, i, cantidad_de_ramas, count, nivel + 1)
+    if base_x + rama_width <= LIMIT_X_MAX:
+        ramas(t, h + 2, distancia_hasta_el_borde_y, pose_x + rama_width, i, cantidad_de_ramas, count, nivel + 1)
+    if base_x - rama_width >= LIMIT_X_MIN:
+        ramas(t, h + 2, distancia_hasta_el_borde_y, pose_x - rama_width, i, cantidad_de_ramas, count, nivel + 1)
 def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_borde_x,distancia_hasta_el_borde_y,old_width,old_heigth,h,distancia_hasta_el_borde_oldl):
     global perimetro
     global numeros_ramas_derecha
@@ -225,7 +256,7 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
     #print(f"lado_cuadrado: {lado_cuadrado}") 
     #print(f"rectangle_width: {rectangle_width}") 
     #print(f"rectangle_height: {rectangle_height}") 
-
+    coordinates[0]=numeros_derecha[-2]-lados_rectangulos[h]+60#/2
     area_total=abs(rectangle_width*rectangle_height)
     count= int(area_total/lado_cuadrado**2)
     
@@ -263,7 +294,9 @@ def work_with_squares(t,rectangle_width,rectangle_height,distancia_hasta_el_bord
        #print(f"Perimetro ahora1: {perimetro}")
           
     if(rectangle_height <= distancia_hasta_el_borde_y and rectangle_width < 600) :
+        
        if(lados_rectangulos[h]>0):  
+         coordinates[0]=numeros_derecha[0]-lados_rectangulos[0]/2-lados_rectangulos[h]/2
         #print("El rectangulo cabe en el espacio restante") 
          new_heigth=rectangle_height
          new_width=rectangle_width
@@ -380,7 +413,34 @@ def draw_squares_around_the_fig(cantidad,lados_rectangulos,numeros_derecha,lado_
      
     coordinates[0]=numeros_derecha[0]-old_width
     coordinates[1]=numeros_derecha[1] 
-       
+def draw_main_rectangle(t, width, height):
+    global numeros_derecha
+    global k
+    global coordinates
+    x = coordinates[0]
+    y = coordinates[1]
+
+
+    t.penup()
+    t.goto(x, y)
+    t.pendown()
+
+    t.pencolor("gray")
+    t.fillcolor(color_palet[k])
+
+    t.begin_fill()
+    for _ in range(2):
+        t.forward(width)
+        t.left(90)
+        t.forward(height)
+        t.left(90)
+    t.end_fill()
+
+
+
+    # Actualizar coordenadas para el siguiente rectángulo en la misma fila
+    coordinates[0] += width
+    coordinates[1] += height          
 def draw_nested_rectangles():
     global numeros
     global numeros_derecha
@@ -433,7 +493,7 @@ def draw_nested_rectangles():
 
     numeros=np.append(numeros,coordinates)
    #print(f"numeros_derecha: {numeros_derecha}")    
-    draw_rectangle(t, main_width, main_height)
+    draw_main_rectangle(t, main_width, main_height)
     
     k+=1
    #print(f"k: {k}") 
